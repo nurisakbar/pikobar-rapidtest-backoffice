@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+// import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
@@ -59,13 +59,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: false,
-      themes: {
-        light: {
-          primary: colors.green.base,
-          secondary: colors.lightGreen.base
-        }
-      }
+      dark: false
     }
   },
   /*

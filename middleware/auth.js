@@ -6,8 +6,7 @@ export default ({ app, store, redirect }) => {
   return new Promise((resolve, reject) => {
     app.$keycloak.init({
       onLoad: 'check-sso',
-      checkLoginIframe: true,
-      responseMode: 'query'
+      checkLoginIframe: true
     })
       .then(async (auth) => {
         if (!auth) {

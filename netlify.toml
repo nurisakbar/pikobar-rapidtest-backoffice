@@ -1,0 +1,9 @@
+[context.production]
+  command = "npm run generate"
+  [context.production.environment]
+    API_URL = "https://api.tesmasif.pikobar.jabarprov.go.id"
+
+[context.develop]
+  command = "npm run generate"
+  [context.develop.environment]
+    API_URL = "https://api.rapidtest.digitalservice.id"

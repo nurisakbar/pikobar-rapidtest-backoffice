@@ -1,9 +1,5 @@
 [context.production]
-  command = "npm run generate"
-  [context.production.environment]
-    API_URL = "https://api.tesmasif.pikobar.jabarprov.go.id"
+  command = "API_URL=$PROD_API_URL KEYCLOAK_URL=$PROD_KEYCLOAK_URL KEYCLOAK_REALM=$PROD_KEYCLOAK_REALM KEYCLOAK_CLIENT_ID=$PROD_KEYCLOAK_CLIENT_ID KEYCLOAK_REDIRECT_URI=$PROD_KEYCLOAK_REDIRECT_URI npm run generate"
 
 [context.develop]
-  command = "npm run generate"
-  [context.develop.environment]
-    API_URL = "https://api.rapidtest.digitalservice.id"
+  command = "API_URL=$STAGING_API_URL KEYCLOAK_URL=$STAGING_KEYCLOAK_URL KEYCLOAK_REALM=$STAGING_KEYCLOAK_REALM KEYCLOAK_CLIENT_ID=$STAGING_KEYCLOAK_CLIENT_ID KEYCLOAK_REDIRECT_URI=$STAGING_KEYCLOAK_REDIRECT_URI npm run generate"

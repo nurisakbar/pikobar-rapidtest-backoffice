@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 export const state = () => ({
   user: null,
   token: null,
-  roles: [],
+  role: null,
   permissions: []
 })
 
@@ -12,6 +12,16 @@ export const state = () => ({
 export const getters = {
   user: state => state.user,
   token: state => state.token,
+  role: state => state.role,
+  roleLabel: (state) => {
+    if (state.role === 'dinkes-provinsi-operator') {
+      return 'Operator Dinas Kesehatan Provinsi'
+    }
+
+    if (state.role === 'dinkes-kabkota-operator') {
+      return 'Operator Dinas Kesehatan'
+    }
+  },
   check: state => state.user !== null
 }
 
@@ -21,16 +31,16 @@ export const mutations = {
     state.token = token
   },
 
-  UPDATE_USER (state, { profile, roles, permissions }) {
+  UPDATE_USER (state, { profile, role, permissions }) {
     state.user = profile
-    state.roles = roles
+    state.role = role
     state.permissions = permissions
   },
 
   LOGOUT (state) {
     state.user = null
     state.token = null
-    state.roles = []
+    state.role = null
     state.permissions = []
   }
 }
@@ -41,8 +51,8 @@ export const actions = {
     commit('UPDATE_USER', payload)
   },
 
-  updateUserSSO ({ commit }, { profile, roles, permissions }) {
-    commit('UPDATE_USER', { profile, roles, permissions })
+  updateUserSSO ({ commit }, { profile, role, permissions }) {
+    commit('UPDATE_USER', { profile, role, permissions })
   },
 
   saveToken ({ commit, dispatch }, { token }) {

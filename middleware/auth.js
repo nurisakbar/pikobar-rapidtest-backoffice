@@ -37,10 +37,11 @@ export default ({ app, store, redirect }) => {
         const userRealmAccess = app.$keycloak.realmAccess
         const userResourceAccess = app.$keycloak.resourceAccess
 
-        const userRoles = userRealmAccess.roles
+        const userRole = userRealmAccess.roles[0]
+
         const userPermissions = userResourceAccess[process.env.keycloakClientId].roles
 
-        store.dispatch('auth/updateUserSSO', { profile: userProfile, roles: userRoles, permissions: userPermissions })
+        store.dispatch('auth/updateUserSSO', { profile: userProfile, role: userRole, permissions: userPermissions })
 
         store.dispatch('auth/saveToken', {
           token: app.$keycloak.token

@@ -7,7 +7,22 @@
       fixed
       app
     >
-      <v-list>
+      <v-list
+        nav
+      >
+        <v-list-item two-line :class="miniVariant && 'px-0'">
+          <v-list-item-avatar>
+            <img src="https://randomuser.me/api/portraits/men/81.jpg">
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ user.firstName }} {{ user.lastName }}</v-list-item-title>
+            <v-list-item-subtitle>{{ roleLabel }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider />
+
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
@@ -56,7 +71,16 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
+  computed: {
+    ...mapGetters('auth', [
+      'user',
+      'roleLabel'
+    ])
+  },
+
   data () {
     return {
       clipped: true,

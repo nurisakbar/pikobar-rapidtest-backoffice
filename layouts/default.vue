@@ -25,7 +25,7 @@
       </v-list>
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="logout">
+          <v-btn block dark color="red" @click="logout">
             Logout
           </v-btn>
         </div>
@@ -35,6 +35,8 @@
       :clipped-left="clipped"
       fixed
       app
+      dark
+      color="primary"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn
@@ -70,6 +72,11 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Peserta',
+          to: '/applicants'
         }
       ],
       miniVariant: false,

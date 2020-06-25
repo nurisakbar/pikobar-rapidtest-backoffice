@@ -74,13 +74,6 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  computed: {
-    ...mapGetters('auth', [
-      'user',
-      'roleLabel'
-    ])
-  },
-
   data () {
     return {
       clipped: true,
@@ -108,6 +101,13 @@ export default {
       rightDrawer: false,
       title: 'Pendaftaran Tes Masif'
     }
+  },
+
+  computed: {
+    ...mapGetters('auth', [
+      'user',
+      'roleLabel'
+    ])
   },
 
   methods: {

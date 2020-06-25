@@ -37,6 +37,7 @@ export default {
       ]
     }
   },
+
   watch: {
     options: {
       handler () {
@@ -49,6 +50,7 @@ export default {
       deep: true
     }
   },
+
   mounted () {
     this.getDataFromApi()
       .then((data) => {
@@ -178,6 +180,12 @@ export default {
           iron: '6%'
         }
       ]
+    }
+  },
+
+  head () {
+    return {
+      title: 'Kelola Peserta'
     }
   }
 }

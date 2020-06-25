@@ -71,6 +71,12 @@ export default {
   components: {
     Logo,
     VuetifyLogo
+  },
+
+  head () {
+    return {
+      title: 'Welcome'
+    }
   }
 }
 </script>

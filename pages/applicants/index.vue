@@ -4,7 +4,6 @@
       :headers="headers"
       :items="records"
       :server-items-length="totalItems"
-      :loading="$fetchState.pending"
       class="elevation-1"
       style="width: 100%"
       :options.sync="options"
@@ -22,18 +21,6 @@ const headers = [
 export default {
   middleware: 'auth',
 
-  async fetch () {
-    const query = {
-      per_page: this.options.itemsPerPage,
-      page: this.options.page
-    }
-
-    const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query })
-
-    this.records = data
-    this.totalItems = meta.total
-  },
-
   data () {
     return {
       headers,
@@ -46,9 +33,32 @@ export default {
   watch: {
     options: {
       handler () {
-        this.$fetch()
+        this.getRecords()
       },
       deep: true
+    }
+  },
+
+  mounted () {
+    // this.getRecords()
+  },
+
+  methods: {
+    async getRecords () {
+      const query = {
+        per_page: this.options.itemsPerPage,
+        page: this.options.page
+      }
+
+      await this.$router.push({
+        name: 'applicants',
+        query
+      })
+
+      const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query })
+
+      this.records = data
+      this.totalItems = meta.total
     }
   },
 

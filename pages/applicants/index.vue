@@ -7,6 +7,7 @@
       class="elevation-1"
       style="width: 100%"
       :options.sync="options"
+      @pagination="getRecords"
     />
   </v-layout>
 </template>
@@ -25,22 +26,24 @@ export default {
     return {
       headers,
       records: [],
-      options: {},
+      options: {
+        page: 1,
+        itemsPerPage: 15
+      },
       totalItems: 0
     }
   },
 
-  watch: {
-    options: {
-      handler () {
-        this.getRecords()
-      },
-      deep: true
-    }
-  },
-
   mounted () {
-    // this.getRecords()
+    if (this.$route.query.page) {
+      this.options.page = parseInt(this.$route.query.page)
+    }
+
+    if (this.$route.query.per_page) {
+      this.options.itemsPerPage = parseInt(this.$route.query.per_page)
+    }
+
+    this.getRecords()
   },
 
   methods: {

@@ -1,21 +1,24 @@
 <template>
-  <div>
+  <div style="width: 100%">
     <v-data-table
       :headers="headers"
       :items="records"
       :server-items-length="totalItems"
       class="elevation-1"
       :options.sync="options"
-    />
+    >
+      <template v-slot:item.created_at="{ item }">
+        <span>{{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}</span>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script>
 const headers = [
-  { text: 'Nomor Pendaftaran', value: 'registration_code' },
+  { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
   { text: 'Nama Peserta', value: 'name' },
-  { text: 'Tanggal Terdaftar', value: 'created_at' },
-  { text: 'Status', value: 'status' }
+  { text: 'Tanggal Terdaftar', value: 'created_at', width: 220 }
 ]
 
 export default {

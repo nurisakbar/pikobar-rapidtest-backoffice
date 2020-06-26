@@ -24,8 +24,8 @@ export default {
     return {
       page: 1,
       perPage: 15,
-      sortBy: 'name',
-      sortOrder: 'asc'
+      sortBy: 'created_at',
+      sortOrder: 'desc'
     }
   },
 

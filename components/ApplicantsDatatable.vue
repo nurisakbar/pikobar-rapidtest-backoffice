@@ -8,7 +8,9 @@
       :options.sync="options"
     >
       <template v-slot:item.created_at="{ item }">
-        <span>{{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}</span>
+        <v-layout justify-end>
+          {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
+        </v-layout>
       </template>
     </v-data-table>
   </div>

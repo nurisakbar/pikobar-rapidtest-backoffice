@@ -20,7 +20,10 @@
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
   { text: 'Nama Peserta', value: 'name' },
-  { text: 'Tanggal Terdaftar', value: 'created_at', width: 220 }
+  { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
+  { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
+  { text: 'Kelurahan', value: 'village.name', sortable: false, width: 250 },
+  { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 }
 ]
 
 export default {

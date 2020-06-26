@@ -7,6 +7,11 @@
       class="elevation-1"
       :options.sync="options"
     >
+      <template v-slot:item.age="{ item }">
+        <v-layout justify-end>
+          {{ item.age }}
+        </v-layout>
+      </template>
       <template v-slot:item.created_at="{ item }">
         <v-layout justify-end>
           {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
@@ -20,6 +25,8 @@
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
   { text: 'Nama Peserta', value: 'name' },
+  { text: 'Jenis Kelamin', value: 'gender', width: 200 },
+  { text: 'Usia (Thn)', value: 'age', width: 150 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
   { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 250 },

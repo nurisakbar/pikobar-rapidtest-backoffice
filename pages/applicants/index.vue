@@ -7,7 +7,6 @@
       class="elevation-1"
       style="width: 100%"
       :options.sync="options"
-      @pagination="getRecords"
     />
   </v-layout>
 </template>
@@ -16,6 +15,7 @@
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code' },
   { text: 'Nama Peserta', value: 'name' },
+  { text: 'Tanggal Terdaftar', value: 'created_at' },
   { text: 'Status', value: 'status' }
 ]
 
@@ -28,9 +28,20 @@ export default {
       records: [],
       options: {
         page: 1,
-        itemsPerPage: 15
+        itemsPerPage: 15,
+        sortBy: ['name'],
+        sortDesc: [false]
       },
       totalItems: 0
+    }
+  },
+
+  watch: {
+    options: {
+      handler () {
+        this.getRecords()
+      },
+      deep: true
     }
   },
 
@@ -43,12 +54,20 @@ export default {
       this.options.itemsPerPage = parseInt(this.$route.query.per_page)
     }
 
-    this.getRecords()
+    if (this.$route.query.sort_by) {
+      this.options.sortBy[0] = this.$route.query.sort_by
+    }
+
+    if (this.$route.query.sort_order) {
+      this.options.sortDesc[0] = this.$route.query.sort_order === 'desc'
+    }
   },
 
   methods: {
     async getRecords () {
       const query = {
+        sort_by: this.options.sortBy[0],
+        sort_order: this.options.sortDesc[0] === true ? 'desc' : 'asc',
         per_page: this.options.itemsPerPage,
         page: this.options.page
       }

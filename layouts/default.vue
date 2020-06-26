@@ -87,13 +87,13 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          title: 'Calon Peserta',
+          to: '/applicants'
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Peserta',
-          to: '/applicants'
+          title: 'Daftar Peserta',
+          to: '/applicants/approved'
         }
       ],
       miniVariant: false,

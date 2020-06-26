@@ -73,11 +73,11 @@ export default {
       }
 
       await this.$router.push({
-        name: 'applicants',
+        name: 'applicants-approved',
         query
       })
 
-      const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query })
+      const { data, meta } = await this.$axios.$get('/rdt/applicants/approved', { params: query })
 
       this.records = data
       this.totalItems = meta.total
@@ -86,7 +86,7 @@ export default {
 
   head () {
     return {
-      title: 'Calon Peserta'
+      title: 'Daftar Peserta'
     }
   }
 }

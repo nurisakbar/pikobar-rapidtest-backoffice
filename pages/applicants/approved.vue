@@ -1,6 +1,7 @@
 <template>
   <v-layout>
     <applicants-datatable
+      title="Daftar Peserta"
       router-name="applicants-approved"
       status="approved"
       :page="page"

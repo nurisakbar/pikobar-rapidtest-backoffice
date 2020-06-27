@@ -1,6 +1,7 @@
 <template>
   <v-layout>
     <applicants-datatable
+      title="Calon Peserta"
       router-name="applicants"
       status="new"
       :page="page"

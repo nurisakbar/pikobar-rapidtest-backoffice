@@ -1,23 +1,35 @@
 <template>
   <div style="width: 100%">
-    <v-data-table
-      :headers="headers"
-      :items="records"
-      :server-items-length="totalItems"
-      class="elevation-1"
-      :options.sync="options"
-    >
-      <template v-slot:item.age="{ item }">
-        <v-layout justify-end>
-          {{ item.age }}
-        </v-layout>
-      </template>
-      <template v-slot:item.created_at="{ item }">
-        <v-layout justify-end>
-          {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
-        </v-layout>
-      </template>
-    </v-data-table>
+    <v-card>
+      <v-card-title>
+        {{ title }}
+        <v-spacer />
+        <v-text-field
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+          @keyup.enter="doFilter"
+        />
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="records"
+        :server-items-length="totalItems"
+        :options.sync="options"
+      >
+        <template v-slot:item.age="{ item }">
+          <v-layout justify-end>
+            {{ item.age }}
+          </v-layout>
+        </template>
+        <template v-slot:item.created_at="{ item }">
+          <v-layout justify-end>
+            {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
+          </v-layout>
+        </template>
+      </v-data-table>
+    </v-card>
   </div>
 </template>
 
@@ -35,6 +47,11 @@ const headers = [
 
 export default {
   props: {
+    title: {
+      type: String,
+      default: 'Calon Peserta'
+    },
+
     routerName: {
       type: String,
       default: 'applicants'
@@ -68,6 +85,7 @@ export default {
 
   data () {
     return {
+      search: null,
       headers,
       records: [],
       options: {
@@ -103,8 +121,14 @@ export default {
   },
 
   methods: {
+    doFilter (e) {
+      this.search = e.target.value
+      this.getRecords()
+    },
+
     async getRecords () {
       const query = {
+        search: this.search,
         sort_by: this.options.sortBy[0],
         sort_order: this.options.sortDesc[0] === true ? 'desc' : 'asc',
         per_page: this.options.itemsPerPage,

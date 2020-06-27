@@ -1,4 +1,4 @@
-// import colors from 'vuetify/es5/util/colors'
+import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
@@ -22,7 +22,8 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
+      { hid: 'theme-color', name: 'theme-color', content: '#399F4F' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -31,7 +32,7 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#64B5F6' },
+  loading: { color: '#2E7D32' },
   /*
   ** Global CSS
   */
@@ -74,7 +75,11 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: false
+      themes: {
+        light: {
+          primary: colors.green
+        }
+      }
     }
   },
 

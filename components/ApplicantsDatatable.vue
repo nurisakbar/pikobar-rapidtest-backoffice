@@ -19,6 +19,11 @@
         :options.sync="options"
         :loading="loading"
       >
+        <template v-slot:item.invitations="{ item }">
+          <v-layout justify-start>
+            {{ getLatestInvitation(item.invitations) }}
+          </v-layout>
+        </template>
         <template v-slot:item.gender="{ item }">
           <v-layout justify-start>
             <template v-if="item.gender === 'F'">
@@ -85,6 +90,7 @@ const headers = [
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 200 },
   { text: 'Riwayat Kontak', value: 'symptoms_interaction', width: 150 },
   { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
+  { text: 'Riwayat Undangan', value: 'invitations', sortable: false, width: 300 },
   { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
   { text: 'Actions', value: 'actions', sortable: false, width: 100 }
 ]
@@ -189,17 +195,21 @@ export default {
         status: this.status
       }
 
-      await this.$router.push({
-        name: this.routerName,
-        query
-      })
+      try {
+        const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query, progress: false })
 
-      const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query, progress: false })
+        this.records = data
+        this.totalItems = meta.total
 
-      this.records = data
-      this.totalItems = meta.total
-
-      this.loading = false
+        await this.$router.push({
+          name: this.routerName,
+          query
+        })
+      } catch (e) {
+        //
+      } finally {
+        this.loading = false
+      }
     },
 
     editItem (item) {
@@ -219,6 +229,20 @@ export default {
     save () {
       this.close()
       this.getRecords()
+    },
+
+    getLatestInvitation (invitations) {
+      if (invitations.length > 0) {
+        const [latestInvitation] = invitations.slice(-1)
+
+        if (latestInvitation.event) {
+          return latestInvitation.event.event_name
+        }
+
+        return 'Pernah'
+      }
+
+      return 'Belum Pernah'
     }
   }
 }

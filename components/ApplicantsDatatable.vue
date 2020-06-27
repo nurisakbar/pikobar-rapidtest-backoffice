@@ -55,8 +55,8 @@ import ApplicantEditDialog from '@/components/ApplicantEditDialog'
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
   { text: 'Nama Peserta', value: 'name' },
-  { text: 'Jenis Kelamin', value: 'gender', width: 120 },
-  { text: 'Usia (Thn)', value: 'age', width: 100 },
+  { text: 'Jenis Kelamin', value: 'gender', width: 150 },
+  { text: 'Usia (Thn)', value: 'age', width: 120 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
   { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 250 },

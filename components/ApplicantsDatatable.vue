@@ -17,6 +17,7 @@
         :items="records"
         :server-items-length="totalItems"
         :options.sync="options"
+        :loading="loading"
       >
         <template v-slot:item.age="{ item }">
           <v-layout justify-end>
@@ -118,6 +119,7 @@ export default {
         sortDesc: [this.sortOrder === 'desc'],
         status: this.status
       },
+      loading: true,
       totalItems: 0,
       editRecordId: null
     }
@@ -151,6 +153,8 @@ export default {
     },
 
     async getRecords () {
+      this.loading = true
+
       const query = {
         search: this.search,
         sort_by: this.options.sortBy[0],
@@ -165,10 +169,12 @@ export default {
         query
       })
 
-      const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query })
+      const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query, progress: false })
 
       this.records = data
       this.totalItems = meta.total
+
+      this.loading = false
     },
 
     editItem (item) {
@@ -187,6 +193,7 @@ export default {
 
     save () {
       this.close()
+      this.getRecords()
     }
   }
 }

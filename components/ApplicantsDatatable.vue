@@ -44,7 +44,7 @@
       </v-data-table>
     </v-card>
 
-    <applicant-edit-dialog :open="dialog" @close="close" @save="save" />
+    <applicant-edit-dialog :open="dialog" :record-id="editRecordId" @close="close" @save="save" />
   </div>
 </template>
 
@@ -118,7 +118,8 @@ export default {
         sortDesc: [this.sortOrder === 'desc'],
         status: this.status
       },
-      totalItems: 0
+      totalItems: 0,
+      editRecordId: null
     }
   },
 
@@ -171,6 +172,7 @@ export default {
     },
 
     editItem (item) {
+      this.editRecordId = item.id
       this.dialog = true
     },
 
@@ -180,6 +182,7 @@ export default {
 
     close () {
       this.dialog = false
+      this.editRecordId = null
     },
 
     save () {

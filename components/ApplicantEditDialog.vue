@@ -10,7 +10,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field label="Nama" />
+                <v-text-field v-model="registrationCode" label="Nomor Pendaftaran" outlined readonly />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="name" label="Nama Peserta" outlined />
               </v-col>
             </v-row>
           </v-container>
@@ -36,12 +39,50 @@ export default {
     open: {
       type: Boolean,
       default: false
+    },
+
+    recordId: {
+      type: Number,
+      default: null
+    }
+  },
+
+  data () {
+    return {
+      registrationCode: null,
+      name: null
+    }
+  },
+
+  watch: {
+    recordId (value) {
+      if (value) {
+        this.fetchRecord()
+      }
     }
   },
 
   methods: {
-    save () {
-      this.$emit('save')
+    async fetchRecord () {
+      const id = this.recordId
+      const { data } = await this.$axios.$get(`/rdt/applicants/${id}`)
+
+      this.registrationCode = data.registration_code
+      this.name = data.name
+    },
+
+    async save () {
+      const id = this.recordId
+
+      try {
+        await this.$axios.$put(`/rdt/applicants/${id}`, {
+          name: this.name
+        })
+
+        this.$emit('save')
+      } catch (e) {
+        //
+      }
     },
 
     close () {

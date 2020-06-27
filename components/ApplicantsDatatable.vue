@@ -28,24 +28,46 @@
             {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
           </v-layout>
         </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon
+            class="mr-2"
+            @click="editItem(item)"
+          >
+            mdi-pencil
+          </v-icon>
+          <v-icon
+            @click="deleteItem(item)"
+          >
+            mdi-delete
+          </v-icon>
+        </template>
       </v-data-table>
     </v-card>
+
+    <applicant-edit-dialog :open="dialog" @close="close" @save="save" />
   </div>
 </template>
 
 <script>
+import ApplicantEditDialog from '@/components/ApplicantEditDialog'
+
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
   { text: 'Nama Peserta', value: 'name' },
-  { text: 'Jenis Kelamin', value: 'gender', width: 200 },
-  { text: 'Usia (Thn)', value: 'age', width: 150 },
+  { text: 'Jenis Kelamin', value: 'gender', width: 120 },
+  { text: 'Usia (Thn)', value: 'age', width: 100 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
   { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 250 },
-  { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 }
+  { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
+  { text: 'Actions', value: 'actions', sortable: false, width: 100 }
 ]
 
 export default {
+  components: {
+    ApplicantEditDialog
+  },
+
   props: {
     title: {
       type: String,
@@ -85,6 +107,7 @@ export default {
 
   data () {
     return {
+      dialog: false,
       search: null,
       headers,
       records: [],
@@ -145,6 +168,22 @@ export default {
 
       this.records = data
       this.totalItems = meta.total
+    },
+
+    editItem (item) {
+      this.dialog = true
+    },
+
+    deleteItem (item) {
+      //
+    },
+
+    close () {
+      this.dialog = false
+    },
+
+    save () {
+      this.close()
     }
   }
 }

@@ -19,6 +19,29 @@
         :options.sync="options"
         :loading="loading"
       >
+        <template v-slot:item.gender="{ item }">
+          <v-layout justify-start>
+            <template v-if="item.gender === 'F'">
+              Perempuan
+            </template>
+            <template v-if="item.gender === 'M'">
+              Laki-Laki
+            </template>
+          </v-layout>
+        </template>
+        <template v-slot:item.symptoms_interaction="{ item }">
+          <v-layout justify-center>
+            <template v-if="item.symptoms_interaction === 0">
+              Ya
+            </template>
+            <template v-if="item.symptoms_interaction === 1">
+              Ya
+            </template>
+            <template v-if="item.symptoms_interaction === 2">
+              Tidak Tahu
+            </template>
+          </v-layout>
+        </template>
         <template v-slot:item.age="{ item }">
           <v-layout justify-end>
             {{ item.age }}
@@ -54,12 +77,14 @@ import ApplicantEditDialog from '@/components/ApplicantEditDialog'
 
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
-  { text: 'Nama Peserta', value: 'name' },
+  { text: 'Nama Peserta', value: 'name', width: 250 },
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },
   { text: 'Usia (Thn)', value: 'age', width: 120 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
   { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
-  { text: 'Kelurahan', value: 'village.name', sortable: false, width: 250 },
+  { text: 'Kelurahan', value: 'village.name', sortable: false, width: 200 },
+  { text: 'Riwayat Kontak', value: 'symptoms_interaction', width: 150 },
+  { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
   { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
   { text: 'Actions', value: 'actions', sortable: false, width: 100 }
 ]

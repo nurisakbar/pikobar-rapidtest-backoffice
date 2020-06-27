@@ -4,6 +4,7 @@ export default {
   mode: 'spa',
 
   env: {
+    appEnv: process.env.APP_ENV || 'local',
     appName: process.env.APP_NAME || 'Application',
     apiUrl: process.env.API_URL,
     keycloakUrl: process.env.KEYCLOAK_URL,
@@ -57,7 +58,8 @@ export default {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/sentry'
   ],
   /*
   ** Axios module configuration
@@ -78,6 +80,13 @@ export default {
 
   dateFns: {
     defaultLocale: 'id'
+  },
+
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    config: {
+      environment: process.env.APP_ENV || 'local'
+    }
   },
 
   /*

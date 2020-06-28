@@ -3,14 +3,27 @@
     <v-card>
       <v-card-title>
         {{ title }}
-        <v-spacer />
-        <v-text-field
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-          @keyup.enter="doFilter"
-        />
+      </v-card-title>
+      <v-card-title>
+        <v-row>
+          <v-col cols="3">
+            <v-text-field
+              v-model="filterSearch"
+              label="Nama Peserta / Nomor Pendaftaran"
+              clearable
+              outlined
+              @keyup.enter="doFilter"
+            />
+          </v-col>
+          <v-col cols="3">
+            <v-text-field label="Kota/Kabupaten" outlined />
+          </v-col>
+          <v-col cols="3">
+            <v-btn large color="primary" @click="doFilter">
+              Search
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-data-table
         :headers="headers"
@@ -140,7 +153,6 @@ export default {
   data () {
     return {
       dialog: false,
-      search: null,
       headers,
       records: [],
       options: {
@@ -151,6 +163,7 @@ export default {
         status: this.status
       },
       loading: true,
+      filterSearch: null,
       totalItems: 0,
       editRecordId: null
     }
@@ -178,8 +191,12 @@ export default {
   },
 
   methods: {
-    doFilter (e) {
-      this.search = e.target.value
+    doFilterReset () {
+      this.filterSearch = null
+      this.doFilter()
+    },
+
+    doFilter () {
       this.getRecords()
     },
 
@@ -187,7 +204,7 @@ export default {
       this.loading = true
 
       const query = {
-        search: this.search,
+        search: this.filterSearch,
         sort_by: this.options.sortBy[0],
         sort_order: this.options.sortDesc[0] === true ? 'desc' : 'asc',
         per_page: this.options.itemsPerPage,

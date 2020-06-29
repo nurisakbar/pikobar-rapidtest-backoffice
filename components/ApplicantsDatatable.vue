@@ -73,6 +73,12 @@
         <template v-slot:item.actions="{ item }">
           <v-icon
             class="mr-2"
+            @click="viewItem(item)"
+          >
+            mdi-card-search
+          </v-icon>
+          <v-icon
+            class="mr-2"
             @click="editItem(item)"
           >
             mdi-pencil
@@ -86,12 +92,14 @@
       </v-data-table>
     </v-card>
 
-    <applicant-edit-dialog :open="dialog" :record-id="editRecordId" @close="close" @save="save" />
+    <applicant-view-dialog :open="viewDialog" :record-id="viewRecordId" @close="viewClose" />
+    <applicant-edit-dialog :open="editDialog" :record-id="editRecordId" @close="editClose" @save="editSave" />
   </div>
 </template>
 
 <script>
 import ApplicantEditDialog from '@/components/ApplicantEditDialog'
+import ApplicantViewDialog from '@/components/ApplicantViewDialog'
 
 const headers = [
   { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
@@ -105,11 +113,12 @@ const headers = [
   { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
   { text: 'Riwayat Undangan', value: 'invitations', sortable: false, width: 300 },
   { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
-  { text: 'Actions', value: 'actions', sortable: false, width: 100 }
+  { text: 'Actions', value: 'actions', sortable: false, width: 150 }
 ]
 
 export default {
   components: {
+    ApplicantViewDialog,
     ApplicantEditDialog
   },
 
@@ -152,7 +161,10 @@ export default {
 
   data () {
     return {
-      dialog: false,
+      editDialog: false,
+      editRecordId: null,
+      viewDialog: false,
+      viewRecordId: null,
       headers,
       records: [],
       options: {
@@ -164,8 +176,7 @@ export default {
       },
       loading: true,
       filterSearch: null,
-      totalItems: 0,
-      editRecordId: null
+      totalItems: 0
     }
   },
 
@@ -229,22 +240,32 @@ export default {
       }
     },
 
+    viewItem (item) {
+      this.viewRecordId = item.id
+      this.viewDialog = true
+    },
+
+    viewClose () {
+      this.viewDialog = false
+      this.viewRecordId = null
+    },
+
     editItem (item) {
       this.editRecordId = item.id
-      this.dialog = true
+      this.editDialog = true
     },
 
     deleteItem (item) {
       //
     },
 
-    close () {
-      this.dialog = false
+    editClose () {
+      this.editDialog = false
       this.editRecordId = null
     },
 
-    save () {
-      this.close()
+    editSave () {
+      this.editClose()
       this.getRecords()
     },
 

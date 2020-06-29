@@ -3,17 +3,17 @@
     <v-dialog :value="open" persistent max-width="800">
       <v-card>
         <v-card-title>
-          <span class="headline">Edit Peserta</span>
+          <span class="headline">Lihat Peserta</span>
         </v-card-title>
 
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="registrationCode" label="Nomor Pendaftaran" outlined readonly />
+                <v-text-field v-model="registrationCode" label="Nomor Pendaftaran" filled readonly />
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="name" label="Nama Peserta" outlined />
+                <v-text-field v-model="name" label="Nama Peserta" filled readonly />
               </v-col>
             </v-row>
           </v-container>
@@ -22,10 +22,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn color="blue darken-1" text @click="close">
-            Batal
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="save">
-            Simpan
+            Keluar
           </v-btn>
         </v-card-actions>
       </v-card>

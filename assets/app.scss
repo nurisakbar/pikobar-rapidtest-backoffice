@@ -1,0 +1,31 @@
+#main-logo {
+  &.logo__small {
+    padding: 0;
+    .v-image {
+      .v-responsive__sizer {
+        padding-bottom: 40px !important;
+      }
+      &__image {
+        background-position: -6px !important;
+      }
+    }
+  }
+}
+.pikobar-nav {
+  &.v-list--nav {
+    .v-item-group {
+      > a {
+        text-decoration: none;
+      }
+    }
+    .v-list-item{
+      border-radius: 0;
+      &.v-list-item--active{
+        border-left: 4px solid #1976d2;
+      }
+      &:before, &:after {
+        border-radius: 0;
+      }
+    }
+  }
+}

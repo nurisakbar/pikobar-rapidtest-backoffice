@@ -10,10 +10,20 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="registrationCode" label="Nomor Pendaftaran" filled readonly />
+                <v-text-field
+                  v-model="registrationCode"
+                  label="Nomor Pendaftaran"
+                  filled
+                  readonly
+                />
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="name" label="Nama Peserta" filled readonly />
+                <v-text-field
+                  v-model="name"
+                  label="Nama Peserta"
+                  filled
+                  readonly
+                />
               </v-col>
             </v-row>
           </v-container>
@@ -44,7 +54,7 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
       registrationCode: null,
       name: null
@@ -52,7 +62,7 @@ export default {
   },
 
   watch: {
-    recordId (value) {
+    recordId(value) {
       if (value) {
         this.fetchRecord()
       }
@@ -60,7 +70,7 @@ export default {
   },
 
   methods: {
-    async fetchRecord () {
+    async fetchRecord() {
       const id = this.recordId
       const { data } = await this.$axios.$get(`/rdt/applicants/${id}`)
 
@@ -68,7 +78,7 @@ export default {
       this.name = data.name
     },
 
-    async save () {
+    async save() {
       const id = this.recordId
 
       try {
@@ -82,7 +92,7 @@ export default {
       }
     },
 
-    close () {
+    close() {
       this.$emit('close')
     }
   }

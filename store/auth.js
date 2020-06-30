@@ -10,9 +10,9 @@ export const state = () => ({
 
 // getters
 export const getters = {
-  user: state => state.user,
-  token: state => state.token,
-  role: state => state.role,
+  user: (state) => state.user,
+  token: (state) => state.token,
+  role: (state) => state.role,
   roleLabel: (state) => {
     if (state.role === 'dinkes-provinsi-operator') {
       return 'Operator Dinas Kesehatan Provinsi'
@@ -22,22 +22,22 @@ export const getters = {
       return 'Operator Dinas Kesehatan'
     }
   },
-  check: state => state.user !== null
+  check: (state) => state.user !== null
 }
 
 // mutations
 export const mutations = {
-  SET_TOKEN (state, token) {
+  SET_TOKEN(state, token) {
     state.token = token
   },
 
-  UPDATE_USER (state, { profile, role, permissions }) {
+  UPDATE_USER(state, { profile, role, permissions }) {
     state.user = profile
     state.role = role
     state.permissions = permissions
   },
 
-  LOGOUT (state) {
+  LOGOUT(state) {
     state.user = null
     state.token = null
     state.role = null
@@ -47,25 +47,25 @@ export const mutations = {
 
 // actions
 export const actions = {
-  updateUser ({ commit }, payload) {
+  updateUser({ commit }, payload) {
     commit('UPDATE_USER', payload)
   },
 
-  updateUserSSO ({ commit }, { profile, role, permissions }) {
+  updateUserSSO({ commit }, { profile, role, permissions }) {
     commit('UPDATE_USER', { profile, role, permissions })
   },
 
-  saveToken ({ commit, dispatch }, { token }) {
+  saveToken({ commit, dispatch }, { token }) {
     commit('SET_TOKEN', token)
 
     Cookies.set('token', token)
   },
 
-  clearToken ({ commit }) {
+  clearToken({ commit }) {
     Cookies.remove('token')
   },
 
-  async logout ({ commit }) {
+  async logout({ commit }) {
     await this.$keycloak.logout()
 
     Cookies.remove('token')

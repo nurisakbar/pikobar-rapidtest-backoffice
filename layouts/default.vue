@@ -7,16 +7,16 @@
       fixed
       app
     >
-      <v-list
-        nav
-      >
+      <v-list nav>
         <v-list-item two-line :class="miniVariant && 'px-0'">
           <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/men/81.jpg">
+            <img src="https://randomuser.me/api/portraits/men/81.jpg" />
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>{{ user.firstName }} {{ user.lastName }}</v-list-item-title>
+            <v-list-item-title>
+              {{ user.firstName }} {{ user.lastName }}
+            </v-list-item-title>
             <v-list-item-subtitle>{{ roleLabel }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -46,18 +46,9 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-      dark
-      color="primary"
-    >
+    <v-app-bar :clipped-left="clipped" fixed app dark color="primary">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
+      <v-btn icon @click.stop="miniVariant = !miniVariant">
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
@@ -74,7 +65,7 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  data () {
+  data() {
     return {
       clipped: true,
       drawer: true,
@@ -104,14 +95,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', [
-      'user',
-      'roleLabel'
-    ])
+    ...mapGetters('auth', ['user', 'roleLabel'])
   },
 
   methods: {
-    logout () {
+    logout() {
       this.$store.dispatch('auth/logout')
     }
   }

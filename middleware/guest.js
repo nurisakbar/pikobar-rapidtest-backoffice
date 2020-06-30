@@ -4,10 +4,11 @@ export default ({ app, redirect }) => {
   }
 
   return new Promise((resolve, reject) => {
-    app.$keycloak.init({
-      onLoad: 'check-sso',
-      checkLoginIframe: true
-    })
+    app.$keycloak
+      .init({
+        onLoad: 'check-sso',
+        checkLoginIframe: true
+      })
       .then((auth) => {
         if (auth) {
           return redirect('/')

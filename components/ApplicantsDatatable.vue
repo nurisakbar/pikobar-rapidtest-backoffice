@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%">
+  <div style="width: 100%;">
     <v-card>
       <v-card-title>
         {{ title }}
@@ -67,33 +67,36 @@
         </template>
         <template v-slot:item.created_at="{ item }">
           <v-layout justify-end>
-            {{ $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm') }}
+            {{
+              $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm')
+            }}
           </v-layout>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon
-            class="mr-2"
-            @click="viewItem(item)"
-          >
+          <v-icon class="mr-2" @click="viewItem(item)">
             mdi-card-search
           </v-icon>
-          <v-icon
-            class="mr-2"
-            @click="editItem(item)"
-          >
+          <v-icon class="mr-2" @click="editItem(item)">
             mdi-pencil
           </v-icon>
-          <v-icon
-            @click="deleteItem(item)"
-          >
+          <v-icon @click="deleteItem(item)">
             mdi-delete
           </v-icon>
         </template>
       </v-data-table>
     </v-card>
 
-    <applicant-view-dialog :open="viewDialog" :record-id="viewRecordId" @close="viewClose" />
-    <applicant-edit-dialog :open="editDialog" :record-id="editRecordId" @close="editClose" @save="editSave" />
+    <applicant-view-dialog
+      :open="viewDialog"
+      :record-id="viewRecordId"
+      @close="viewClose"
+    />
+    <applicant-edit-dialog
+      :open="editDialog"
+      :record-id="editRecordId"
+      @close="editClose"
+      @save="editSave"
+    />
   </div>
 </template>
 
@@ -102,7 +105,12 @@ import ApplicantEditDialog from '@/components/ApplicantEditDialog'
 import ApplicantViewDialog from '@/components/ApplicantViewDialog'
 
 const headers = [
-  { text: 'Nomor Pendaftaran', value: 'registration_code', sortable: false, width: 150 },
+  {
+    text: 'Nomor Pendaftaran',
+    value: 'registration_code',
+    sortable: false,
+    width: 150
+  },
   { text: 'Nama Peserta', value: 'name', width: 250 },
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },
   { text: 'Usia (Thn)', value: 'age', width: 120 },
@@ -111,7 +119,12 @@ const headers = [
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 200 },
   { text: 'Riwayat Kontak', value: 'symptoms_interaction', width: 150 },
   { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
-  { text: 'Riwayat Undangan', value: 'invitations', sortable: false, width: 300 },
+  {
+    text: 'Riwayat Undangan',
+    value: 'invitations',
+    sortable: false,
+    width: 300
+  },
   { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
   { text: 'Actions', value: 'actions', sortable: false, width: 150 }
 ]
@@ -159,7 +172,7 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
       editDialog: false,
       editRecordId: null,
@@ -181,20 +194,20 @@ export default {
   },
 
   watch: {
-    page (value) {
+    page(value) {
       this.options.page = value
     },
-    perPage (value) {
+    perPage(value) {
       this.options.itemsPerPage = value
     },
-    sortBy (value) {
+    sortBy(value) {
       this.options.sortBy = [value]
     },
-    sortOrder (value) {
+    sortOrder(value) {
       this.options.sortDesc = [value === 'desc']
     },
     options: {
-      handler () {
+      handler() {
         this.getRecords()
       },
       deep: true
@@ -202,16 +215,16 @@ export default {
   },
 
   methods: {
-    doFilterReset () {
+    doFilterReset() {
       this.filterSearch = null
       this.doFilter()
     },
 
-    doFilter () {
+    doFilter() {
       this.getRecords()
     },
 
-    async getRecords () {
+    async getRecords() {
       this.loading = true
 
       const query = {
@@ -224,7 +237,10 @@ export default {
       }
 
       try {
-        const { data, meta } = await this.$axios.$get('/rdt/applicants', { params: query, progress: false })
+        const { data, meta } = await this.$axios.$get('/rdt/applicants', {
+          params: query,
+          progress: false
+        })
 
         this.records = data
         this.totalItems = meta.total
@@ -240,36 +256,36 @@ export default {
       }
     },
 
-    viewItem (item) {
+    viewItem(item) {
       this.viewRecordId = item.id
       this.viewDialog = true
     },
 
-    viewClose () {
+    viewClose() {
       this.viewDialog = false
       this.viewRecordId = null
     },
 
-    editItem (item) {
+    editItem(item) {
       this.editRecordId = item.id
       this.editDialog = true
     },
 
-    deleteItem (item) {
+    deleteItem(item) {
       //
     },
 
-    editClose () {
+    editClose() {
       this.editDialog = false
       this.editRecordId = null
     },
 
-    editSave () {
+    editSave() {
       this.editClose()
       this.getRecords()
     },
 
-    getLatestInvitation (invitations) {
+    getLatestInvitation(invitations) {
       if (invitations.length > 0) {
         const [latestInvitation] = invitations.slice(-1)
 

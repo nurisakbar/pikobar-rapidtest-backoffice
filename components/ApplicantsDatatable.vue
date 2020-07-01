@@ -60,6 +60,11 @@
             </template>
           </v-layout>
         </template>
+        <template v-slot:item.person_status="{ item }">
+          <v-layout justify-start>
+            {{ getPersonStatusText(item.person_status) }}
+          </v-layout>
+        </template>
         <template v-slot:item.age="{ item }">
           <v-layout justify-end>
             {{ item.age }}
@@ -112,6 +117,7 @@ const headers = [
     width: 150
   },
   { text: 'Nama Peserta', value: 'name', width: 250 },
+  { text: 'Status Kesehatan', value: 'person_status', width: 150 },
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },
   { text: 'Usia (Thn)', value: 'age', width: 120 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
@@ -297,6 +303,28 @@ export default {
       }
 
       return 'Belum Pernah'
+    },
+
+    getPersonStatusText(value) {
+      if (value === 'ODP') {
+        return 'ODP'
+      }
+
+      if (value === 'PDP') {
+        return 'PDP'
+      }
+
+      if (value === 'OTG') {
+        return 'OTG'
+      }
+
+      if (value === 'NOT_ALL') {
+        return 'Bukan Ketiganya'
+      }
+
+      if (value === 'UNKNOWN') {
+        return 'Tidak Tahu'
+      }
     }
   }
 }

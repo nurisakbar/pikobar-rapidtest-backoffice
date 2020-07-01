@@ -21,7 +21,7 @@ export default {
     ApplicantsDatatable
   },
 
-  data () {
+  data() {
     return {
       page: 1,
       perPage: 15,
@@ -30,7 +30,7 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     if (this.$route.query.page) {
       this.page = parseInt(this.$route.query.page)
     }
@@ -48,7 +48,7 @@ export default {
     }
   },
 
-  head () {
+  head() {
     return {
       title: 'Daftar Peserta'
     }

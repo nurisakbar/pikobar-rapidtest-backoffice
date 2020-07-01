@@ -13,7 +13,7 @@ export default {
   middleware: 'guest',
 
   methods: {
-    login () {
+    login() {
       this.$keycloak.login({ redirectUri: process.env.keycloakRedirectUri })
     }
   }

@@ -60,7 +60,11 @@
                               : 'N/A'
                           }}
                         </td>
-                        <td>{{ invitation.test_type }}</td>
+                        <td>
+                          {{
+                            invitation.test_type ? invitation.test_type : 'N/A'
+                          }}
+                        </td>
                         <td>
                           {{
                             invitation.result_at

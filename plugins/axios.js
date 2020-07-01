@@ -15,6 +15,19 @@ export default function ({ $axios, redirect }) {
 
     const code = parseInt(error.response && error.response.status)
 
+    /*
+    @TODO move all messages to static/dictionary strings
+     */
+
+    if (code === 401) {
+      return alert('Waktu sesi Anda telah habis, silahkan login kembali.')
+      // return redirect('/login')
+    }
+
+    if (code === 403) {
+      return alert('Anda tidak memiliki hak akses.')
+    }
+
     if (code === 429) {
       return alert(
         'Terlalu banyak Request, silahkan tunggu beberapa saat kembali.'

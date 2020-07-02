@@ -37,10 +37,20 @@ export default ({ app, store, redirect }) => {
             })
         }, 60000)
 
-        const userProfile = await app.$keycloak.loadUserProfile()
         const userRealmAccess = app.$keycloak.realmAccess
         const userResourceAccess = app.$keycloak.resourceAccess
 
+        if (
+          typeof userRealmAccess === 'undefined' ||
+          typeof userResourceAccess === 'undefined' ||
+          typeof userResourceAccess[process.env.keycloakClientId] ===
+            'undefined'
+        ) {
+          alert('Anda tidak mempunyai akses ke aplikasi ini.')
+          return app.$keycloak.logout()
+        }
+
+        const userProfile = await app.$keycloak.loadUserProfile()
         const userRole = userRealmAccess.roles[0]
 
         const userPermissions =

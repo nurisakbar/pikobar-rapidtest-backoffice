@@ -78,13 +78,13 @@
           </v-layout>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon class="mr-2" @click="viewItem(item)">
+          <v-icon v-if="allowView" class="mr-2" @click="viewItem(item)">
             mdi-card-search
           </v-icon>
-          <v-icon class="mr-2" @click="editItem(item)">
+          <v-icon v-if="allowEdit" class="mr-2" @click="editItem(item)">
             mdi-pencil
           </v-icon>
-          <v-icon @click="deleteItem(item)">
+          <v-icon v-if="allowDelete" @click="deleteItem(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -92,11 +92,13 @@
     </v-card>
 
     <applicant-view-dialog
+      v-if="allowView"
       :open="viewDialog"
       :record-id="viewRecordId"
       @close="viewClose"
     />
     <applicant-edit-dialog
+      v-if="allowEdit"
       :open="editDialog"
       :record-id="editRecordId"
       @close="editClose"
@@ -175,6 +177,31 @@ export default {
     sortOrder: {
       type: String,
       default: 'asc'
+    },
+
+    allowList: {
+      type: Boolean,
+      default: false
+    },
+
+    allowView: {
+      type: Boolean,
+      default: false
+    },
+
+    allowCreate: {
+      type: Boolean,
+      default: false
+    },
+
+    allowEdit: {
+      type: Boolean,
+      default: false
+    },
+
+    allowDelete: {
+      type: Boolean,
+      default: false
     }
   },
 

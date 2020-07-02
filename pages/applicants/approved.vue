@@ -8,11 +8,17 @@
       :per-page="perPage"
       :sort-by="sortBy"
       :sort-order="sortOrder"
+      :allow-list="permissions.includes('list-applicants')"
+      :allow-view="permissions.includes('view-applicants')"
+      :allow-create="permissions.includes('manage-applicants')"
+      :allow-edit="permissions.includes('manage-applicants')"
+      :allow-delete="permissions.includes('manage-applicants')"
     />
   </v-layout>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApplicantsDatatable from '@/components/ApplicantsDatatable'
 
 export default {
@@ -28,6 +34,10 @@ export default {
       sortBy: 'created_at',
       sortOrder: 'desc'
     }
+  },
+
+  computed: {
+    ...mapGetters('auth', ['permissions'])
   },
 
   mounted() {

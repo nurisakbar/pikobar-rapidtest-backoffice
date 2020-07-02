@@ -18,10 +18,15 @@ export const getters = {
       return 'Operator Dinas Kesehatan Provinsi'
     }
 
+    if (state.role === 'dinkes-provinsi-monitoring') {
+      return 'Monitoring Dinas Kesehatan Provinsi'
+    }
+
     if (state.role === 'dinkes-kabkota-operator') {
       return 'Operator Dinas Kesehatan'
     }
   },
+  permissions: (state) => state.permissions,
   check: (state) => state.user !== null
 }
 

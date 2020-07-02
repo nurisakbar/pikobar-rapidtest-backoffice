@@ -20,8 +20,8 @@ export default function ({ $axios, redirect }) {
      */
 
     if (code === 401) {
-      return alert('Waktu sesi Anda telah habis, silahkan login kembali.')
-      // return redirect('/login')
+      alert('Waktu sesi Anda telah habis, silahkan login kembali.')
+      return redirect('/login')
     }
 
     if (code === 403) {

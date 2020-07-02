@@ -22,6 +22,7 @@
         <v-list-item-group v-model="activeItem" color="primary">
           <nuxt-link v-for="(item, i) in items" :key="i" :to="item.to">
             <v-list-item
+              v-if="permissions.includes(item.permission)"
               :value="item.to"
               dense
               nuxt
@@ -80,17 +81,20 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Welcome',
-          to: '/'
+          to: '/',
+          permission: 'access-backoffice'
         },
         {
           icon: 'mdi-account-group',
           title: 'Calon Peserta',
-          to: '/applicants'
+          to: '/applicants',
+          permission: 'list-applicants'
         },
         {
           icon: 'mdi-card-account-details-star',
           title: 'Daftar Peserta',
-          to: '/applicants/approved'
+          to: '/applicants/approved',
+          permission: 'list-applicants'
         }
       ],
       miniVariant: false,
@@ -101,7 +105,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['user', 'roleLabel'])
+    ...mapGetters('auth', ['user', 'roleLabel', 'permissions'])
   },
 
   methods: {

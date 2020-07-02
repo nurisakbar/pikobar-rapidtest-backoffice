@@ -1,5 +1,5 @@
 <template>
-  <v-layout>
+  <v-layout v-if="permissions.includes('list-applicants')">
     <applicants-datatable
       title="Calon Peserta"
       router-name="applicants"

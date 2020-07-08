@@ -1,8 +1,4 @@
 /* eslint-disable camelcase */
-import axios from 'axios'
-const areaAxios = axios.create({
-  baseURL: 'https://api.rapidtest.digitalservice.id/api/'
-})
 
 export const state = () => ({
   loading: false,
@@ -53,8 +49,12 @@ export const actions = {
   async getKabkot({ commit }) {
     commit('SET_LOADING', true)
     try {
-      const { data } = await areaAxios.get('/master/areas')
-      commit('SET_KABKOT', data.data)
+      const { data } = await this.$axios.$get('master/areas', {
+        headers: {
+          Authorization: null
+        }
+      })
+      commit('SET_KABKOT', data)
     } catch (e) {
       // console.log(e)
     } finally {
@@ -64,10 +64,15 @@ export const actions = {
   async getKecamatan({ commit }, idKabkot) {
     commit('SET_LOADING', true)
     try {
-      const { data } = await areaAxios.get(
-        `/master/areas?parent_code_kemendagri=${idKabkot}`
+      const { data } = await this.$axios.get(
+        `/master/areas?parent_code_kemendagri=${idKabkot}`,
+        {
+          headers: {
+            Authorization: null
+          }
+        }
       )
-      commit('SET_KECAMATAN', data.data)
+      commit('SET_KECAMATAN', data)
     } catch (e) {
       // console.log(e)
     } finally {
@@ -77,10 +82,15 @@ export const actions = {
   async getDesa({ commit }, idKecamatan) {
     commit('SET_LOADING', true)
     try {
-      const { data } = await areaAxios.get(
-        `/master/areas?parent_code_kemendagri=${idKecamatan}`
+      const { data } = await this.$axios.get(
+        `/master/areas?parent_code_kemendagri=${idKecamatan}`,
+        {
+          headers: {
+            Authorization: null
+          }
+        }
       )
-      commit('SET_DESA', data.data)
+      commit('SET_DESA', data)
     } catch (e) {
       //
     } finally {

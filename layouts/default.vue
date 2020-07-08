@@ -129,7 +129,7 @@ export default {
           icon: 'mdi-book',
           title: 'Kegiatan',
           to: '/events',
-          permission: 'list-applicants'
+          permission: 'list-events'
         }
       ],
       miniVariant: false,

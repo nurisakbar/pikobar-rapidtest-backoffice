@@ -94,7 +94,6 @@
 
 <script>
 /* eslint-disable camelcase */
-import moment from 'moment'
 import { getChipColor } from '@/utilities/formater'
 
 export default {
@@ -132,9 +131,11 @@ export default {
       this.event_location = val ? val.event_location : null
       this.city = val ? val.city : null
       this.start_at = val
-        ? moment(val.start_at).format('DD-MM-YYYY HH:MM')
+        ? this.$dateFns.format(new Date(val.start_at), 'dd-MM-yyyy hh:mm')
         : null
-      this.end_at = val ? moment(val.end_at).format('DD-MM-YYYY HH:MM') : null
+      this.end_at = val
+        ? this.$dateFns.format(new Date(val.end_at), 'dd-MM-yyyy hh:mm')
+        : null
       this.invitations_count = val ? val.invitations_count : null
     }
   }

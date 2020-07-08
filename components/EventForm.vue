@@ -172,14 +172,21 @@ export default {
     doStore() {
       const schedules = this.kloter.map((waktu, i) => {
         let [start_atSch, end_atSch] = waktu.split('-')
-        start_atSch = moment(this.tanggal)
-          .hours(start_atSch.split(':')[0])
-          .minutes(start_atSch.split(':')[1])
-          .format()
-        end_atSch = moment(this.tanggal)
-          .hours(end_atSch.split(':')[0])
-          .minutes(end_atSch.split(':')[1])
-          .format()
+        const { setHours, setMinutes, format } = this.$dateFns
+        start_atSch = format(
+          setHours(
+            setMinutes(new Date(this.tanggal), start_atSch.split(':')[1]),
+            start_atSch.split(':')[0]
+          ),
+          "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        )
+        end_atSch = format(
+          setHours(
+            setMinutes(new Date(this.tanggal), end_atSch.split(':')[1]),
+            end_atSch.split(':')[0]
+          ),
+          "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        )
         return {
           start_at: start_atSch,
           end_at: end_atSch

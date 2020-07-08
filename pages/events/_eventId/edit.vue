@@ -4,6 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { EVENT_SUCCESS_UPDATE } from '@/utilities/constant'
 import EventForm from '@/components/EventForm'
 
 export default {
@@ -26,7 +27,7 @@ export default {
       try {
         await this.$store.dispatch('events/edit', payload)
         this.$toast.show({
-          message: 'Kegiatan berhasil di perbaharui',
+          message: EVENT_SUCCESS_UPDATE,
           type: 'success'
         })
         setTimeout(() => {

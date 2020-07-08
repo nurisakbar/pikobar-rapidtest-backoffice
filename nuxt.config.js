@@ -42,7 +42,14 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/axios', '~/plugins/keycloak'],
+  plugins: [
+    '~/plugins/axios',
+    '~/plugins/keycloak',
+    '~/plugins/global-components',
+    '~/plugins/validation',
+    '~/plugins/toast',
+    '~/plugins/alert'
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -86,6 +93,9 @@ export default {
           success: colors.green.accent3
         }
       }
+    },
+    options: {
+      customProperties: true
     }
   },
 

@@ -63,6 +63,35 @@
       <v-container>
         <nuxt />
       </v-container>
+
+      <v-snackbar v-model="showToast" :color="typeToast" top center>
+        {{ messageToast }}
+        <template v-slot:action="{ attrs }">
+          <v-btn text v-bind="attrs" @click="showToast = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
+
+      <v-dialog v-model="showAlert" max-width="290">
+        <v-card>
+          <v-card-title class="headline">
+            {{ titleAlert }}
+          </v-card-title>
+          <v-card-text>
+            {{ messageAlert }}
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="showAlert = false">
+              Cancel
+            </v-btn>
+            <v-btn color="green darken-1" text @click="okAlert">
+              OK
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-main>
   </v-app>
 </template>
@@ -95,17 +124,46 @@ export default {
           title: 'Daftar Peserta',
           to: '/applicants/approved',
           permission: 'list-applicants'
+        },
+        {
+          icon: 'mdi-book',
+          title: 'Kegiatan',
+          to: '/events',
+          permission: 'list-events'
         }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Pendaftaran Tes Masif'
+      title: 'Pendaftaran Tes Masif',
+      showToast: false,
+      typeToast: 'success',
+      messageToast: '',
+      showAlert: false,
+      titleAlert: 'Alert',
+      messageAlert: '',
+      okAlert: () => {}
     }
   },
 
   computed: {
     ...mapGetters('auth', ['user', 'roleLabel', 'permissions'])
+  },
+
+  async created() {
+    await this.$store.dispatch('area/getKabkot')
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'toast/show') {
+        this.messageToast = state.toast.message
+        this.typeToast = state.toast.type
+        this.showToast = state.toast.show
+      } else if (mutation.type === 'alert/show') {
+        this.messageToast = state.alert.title
+        this.messageToast = state.alert.message
+        this.okAlert = state.alert.ok
+        this.showAlert = state.alert.show
+      }
+    })
   },
 
   methods: {

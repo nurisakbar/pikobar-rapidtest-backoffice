@@ -29,3 +29,18 @@
     }
   }
 }
+.pkbr-timepicker {
+  .v-picker {
+    border-radius: 0;
+  }
+  .v-picker__title {
+    .v-time-picker-title {
+      justify-content: flex-start;
+    }
+    padding: 6px;
+    .v-time-picker-title__time .v-picker__title__btn, .v-time-picker-title__time span {
+      height: 32px;
+      font-size: 32px;
+    }
+  }
+}

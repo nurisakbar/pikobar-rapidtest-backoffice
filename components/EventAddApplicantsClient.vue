@@ -1,8 +1,18 @@
 <template>
   <div style="width: 100%;">
-    <h2 class="primary--text">
-      {{ title }}
-    </h2>
+    <v-card>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="grey"
+          class="white--text"
+          :to="`/events/${$route.params.eventId}/edit`"
+        >
+          Ubah
+        </v-btn>
+      </v-card-actions>
+    </v-card>
     <v-row>
       <v-col cols="auto">
         <v-text-field
@@ -24,8 +34,6 @@
       <v-data-table
         :headers="headers"
         :items="records"
-        :server-items-length="totalItems"
-        :options.sync="options"
         :loading="loading"
         fixed-header
       >
@@ -119,9 +127,6 @@ export default {
       get() {
         return this.$store.getters['events/getTableOption']
       }
-    },
-    totalItems() {
-      return this.$store.getters['events/getTotalData']
     }
   },
 
@@ -132,23 +137,14 @@ export default {
   },
 
   mounted() {
-    const options = { ...this.options }
-    if (this.$route.query.page) {
-      options.page = parseInt(this.$route.query.page)
-    }
-    if (this.$route.query.perPage) {
-      options.perPage = parseInt(this.$route.query.perPage)
-    }
-    if (this.$route.query.sortBy) {
-      options.sortBy = [this.$route.query.sortBy]
-    }
-    if (this.$route.query.sortOrder) {
-      options.sortOrder = [this.$route.query.sortOrder]
-    }
-    this.options = options
+    this.options.perPage = 5000
+    this.getRecords()
   },
 
   methods: {
+    getRecords() {
+      this.$store.dispatch('events/getList')
+    },
     remove(id) {
       try {
         this.$store.dispatch('events/remove', id)

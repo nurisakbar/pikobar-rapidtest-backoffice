@@ -1,10 +1,10 @@
 <template>
   <div style="width: 100%;">
     <h3 class="mb-1">{{ event_name }}</h3>
-    <v-row>
-      <v-col cols="8">
-        <v-card>
-          <v-card-text>
+    <v-card>
+      <v-card-text>
+        <v-row no-gutters>
+          <v-col cols="8">
             <v-row>
               <v-col cols="4">
                 <label class="text-subtitle-2 grey--text">Penyelenggara</label>
@@ -62,33 +62,31 @@
                 </p>
               </v-col>
             </v-row>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="grey"
-              class="white--text"
-              :to="`/events/${$route.params.eventId}/edit`"
-            >
-              Ubah
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="pb-14 mb-4">
-          <v-card-subtitle class="font-weight-bold">Web Poster</v-card-subtitle>
-          <v-divider></v-divider>
-        </v-card>
-        <v-card class="pb-14">
-          <v-card-subtitle class="font-weight-bold">
-            Mobile Poster
-          </v-card-subtitle>
-          <v-divider></v-divider>
-        </v-card>
-      </v-col>
-    </v-row>
+          </v-col>
+          <v-col cols="4">
+            <label class="text-subtitle-2 grey--text">Kloter</label>
+            <ol class="mt-2 mb-0 pl-4">
+              <li v-for="(sch, i) in kloter" :key="i" class="mb-1">
+                <strong>ID {{ sch.id }}</strong
+                >: {{ sch.start_at }} -
+                {{ sch.end_at }}
+              </li>
+            </ol>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="grey"
+          class="white--text"
+          :to="`/events/${$route.params.eventId}/edit`"
+        >
+          Ubah
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 
@@ -118,7 +116,8 @@ export default {
       event_location: null,
       city: null,
       invitations_count: null,
-      status: 'DRAFT'
+      status: 'DRAFT',
+      kloter: []
     }
   },
 
@@ -131,12 +130,29 @@ export default {
       this.event_location = val ? val.event_location : null
       this.city = val ? val.city : null
       this.start_at = val
-        ? this.$dateFns.format(new Date(val.start_at), 'dd-MM-yyyy hh:mm')
+        ? this.$dateFns.format(
+            new Date(val.start_at.split('.')[0]),
+            'dd-MM-yyyy HH:mm'
+          )
         : null
       this.end_at = val
-        ? this.$dateFns.format(new Date(val.end_at), 'dd-MM-yyyy hh:mm')
+        ? this.$dateFns.format(
+            new Date(val.end_at.split('.')[0]),
+            'dd-MM-yyyy HH:mm'
+          )
         : null
       this.invitations_count = val ? val.invitations_count : null
+      this.kloter = val.schedules.map((sch) => ({
+        ...sch,
+        start_at: this.$dateFns.format(
+          new Date(sch.start_at.split('.')[0]),
+          'HH:mm'
+        ),
+        end_at: this.$dateFns.format(
+          new Date(sch.end_at.split('.')[0]),
+          'HH:mm'
+        )
+      }))
     }
   }
 }

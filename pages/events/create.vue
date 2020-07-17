@@ -14,7 +14,10 @@ export default {
   methods: {
     async doStore(payload) {
       try {
-        await this.$store.dispatch('events/create', payload)
+        const { data } = await this.$store.dispatch('events/create', payload)
+        setTimeout(() => {
+          this.$router.push(`/events/${data.id}`)
+        })
         this.$toast.show({
           message: EVENT_SUCCESS_CREATE,
           type: 'success'

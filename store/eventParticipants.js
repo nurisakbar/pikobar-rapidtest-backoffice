@@ -5,7 +5,9 @@ import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '@/utilities/constant'
 
 export const state = () => ({
   loading: false,
+  loadingImport: false,
   data: [],
+  dataParticipants: [],
   current: null,
   pagination: { ...DEFAULT_PAGINATION },
   filter: { ...DEFAULT_FILTER }
@@ -55,8 +57,13 @@ export const mutations = {
     s.pagination = {
       itemsPerPage: payload.itemsPerPage - 0,
       page: payload.page,
+      perPage: payload.perPage,
       total: payload.total
     }
+  },
+  SET_LOADING_IMPORT(state, payload) {
+    const s = state
+    s.loadingImport = payload
   }
 }
 
@@ -88,13 +95,16 @@ export const getters = {
   getTotalData(state) {
     const s = state
     return s.pagination.total
+  },
+  getLoadingImport() {
+    const s = state
+    return s.loadingImport
   }
 }
 
 export const actions = {
-  async getList({ commit, state }) {
+  async getListParticipants({ commit }, id) {
     commit('SET_LOADING', true)
-
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
@@ -110,10 +120,57 @@ export const actions = {
         },
         (value, key) => snakeCase(key)
       )
-      const { data, meta } = await this.$axios.$get('/rdt/events', {
-        params: query,
-        progress: false
+      const { data, meta } = await this.$axios.$get(
+        `/rdt/events/${id}/participants`,
+        {
+          query,
+          progress: false
+        }
+      )
+      commit('SET_DATA_PARTICIPANTS', data)
+      const tablePagination = mapKeys(
+        {
+          itemsPerPage: parseInt(meta.per_page),
+          ...meta
+        },
+        (value, key) => camelCase(key)
+      )
+      commit('SET_PAGINATION', {
+        page: tablePagination.currentPage,
+        ...tablePagination
       })
+    } catch (e) {
+      //
+    } finally {
+      commit('SET_LOADING', false)
+    }
+  },
+  async getList({ commit, state }, eventId) {
+    commit('SET_LOADING', true)
+
+    try {
+      const { pagination, filter } = state
+      const { page, itemsPerPage } = pagination
+      const { search, sortBy, sortOrder, status } = filter
+      console.log(itemsPerPage)
+      const query = mapKeys(
+        {
+          page,
+          perPage: itemsPerPage,
+          search,
+          sortBy: sortBy[0] || null,
+          sortOrder: sortOrder[0] ? 'desc' : 'asc',
+          status
+        },
+        (value, key) => snakeCase(key)
+      )
+      const { data, meta } = await this.$axios.$get(
+        `/rdt/events/${eventId}/participants`,
+        {
+          params: query,
+          progress: false
+        }
+      )
       const tablePagination = mapKeys(
         {
           itemsPerPage: parseInt(meta.per_page),
@@ -145,25 +202,29 @@ export const actions = {
       commit('SET_LOADING', false)
     }
   },
-  async create({ commit }, payload) {
-    commit('SET_LOADING', true)
+
+  async importPeserta({ commit }, { idEvent, formData }) {
+    commit('SET_LOADING_IMPORT', true)
+
     try {
-      const res = await this.$axios.$post('/rdt/events', payload)
-      return res
-    } catch (error) {
-      throw new Error(error)
+      await this.$axios.$post(
+        `/rdt/events/${idEvent}/participants-import`,
+        formData
+      )
+    } catch (e) {
+      throw new Error(e.response.data.errors.file[0])
     } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-  async edit({ commit, state }, payload) {
-    commit('SET_LOADING', true)
-    try {
-      await this.$axios.$put(`/rdt/events/${state.current.id}`, payload)
-    } catch (error) {
-      throw new Error(error)
-    } finally {
-      commit('SET_LOADING', false)
+      commit('SET_LOADING_IMPORT', false)
     }
   }
+  // async edit({ commit, state }, payload) {
+  //   commit('SET_LOADING', true)
+  //   try {
+  //     await this.$axios.$put(`/rdt/events/${state.current.id}`, payload)
+  //   } catch (error) {
+  //     throw new Error(error)
+  //   } finally {
+  //     commit('SET_LOADING', false)
+  //   }
+  // }
 }

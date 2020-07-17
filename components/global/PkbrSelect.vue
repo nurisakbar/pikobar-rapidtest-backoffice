@@ -50,6 +50,10 @@ export default {
       type: String,
       default: ''
     },
+    allowNull: {
+      type: Boolean,
+      default: false
+    },
     items: {
       type: Array,
       default: () => []
@@ -69,7 +73,7 @@ export default {
         const firstItem = {}
         firstItem[this.itemText] = this.placeholder
         firstItem[this.itemValue] = null
-        firstItem.disabled = true
+        firstItem.disabled = !this.allowNull
         return [firstItem, ...this.items]
       }
       return [...this.items]

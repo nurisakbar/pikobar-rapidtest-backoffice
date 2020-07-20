@@ -1,8 +1,18 @@
 <template>
   <div style="width: 100%;">
-    <h2 class="primary--text">
-      {{ title }}
-    </h2>
+    <v-card>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="grey"
+          class="white--text"
+          :to="`/events/${$route.params.eventId}/edit`"
+        >
+          Ubah
+        </v-btn>
+      </v-card-actions>
+    </v-card>
     <v-row>
       <v-col cols="auto">
         <v-text-field
@@ -146,9 +156,13 @@ export default {
       options.sortOrder = [this.$route.query.sortOrder]
     }
     this.options = options
+    // this.getRecords()
   },
 
   methods: {
+    getRecords() {
+      this.$store.dispatch('events/getList')
+    },
     remove(id) {
       try {
         this.$store.dispatch('events/remove', id)

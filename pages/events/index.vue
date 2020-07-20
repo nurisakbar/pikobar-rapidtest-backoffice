@@ -20,12 +20,6 @@ export default {
     EventsDatatable
   },
 
-  data() {
-    return {
-      options: {}
-    }
-  },
-
   computed: {
     ...mapGetters('auth', ['permissions'])
   },
@@ -33,9 +27,6 @@ export default {
   watch: {
     '$route.query': {
       handler(value) {
-        this.options.itemsPerPage = value.page
-        this.options.sortBy = [value]
-        this.options.sortDesc = [value === 'desc']
         this.$store.dispatch('events/getList')
       },
       deep: true
@@ -46,7 +37,7 @@ export default {
     onOptionChange(value) {
       let query = { ...this.$route.query }
       if (value.page) query.page = value.page
-      query.perPage = value.perPage || null
+      query.perPage = value.itemsPerPage || null
       query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
       query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
       query = pickBy(query, identity)

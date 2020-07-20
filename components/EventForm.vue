@@ -52,7 +52,7 @@
         </v-col>
         <v-col cols="6">
           <pkbr-select
-            v-model="city"
+            v-model="city_code"
             :items="getKabkot"
             label="Kab./Kota"
             name="Kab./Kota"
@@ -81,7 +81,7 @@
             placeholder="Masukan Jam Kloter"
             rules="required|time_range"
           >
-            <template v-slot:append-outer>
+            <template v-if="type === 'create'" v-slot:append-outer>
               <v-btn small icon color="success" @click="addKloter">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -129,7 +129,7 @@ export default {
       event_name: null,
       host_name: null,
       event_location: null,
-      city: null,
+      city_code: null,
       status: 'DRAFT',
       tanggal: null,
       kloter: [null]
@@ -154,7 +154,7 @@ export default {
       this.status = val ? val.status : null
       this.host_name = val ? val.host_name : null
       this.event_location = val ? val.event_location : null
-      this.city = val ? val.city : null
+      this.city_code = val && val.city ? val.city.code : null
       this.tanggal = val ? moment(val.start_at).format() : null
       this.kloter = kloter
     }
@@ -188,6 +188,7 @@ export default {
           "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
         )
         return {
+          id: this.formData.schedules[i].id || null,
           start_at: start_atSch,
           end_at: end_atSch
         }
@@ -198,7 +199,7 @@ export default {
         event_name: this.event_name,
         host_name: this.host_name,
         event_location: this.event_location,
-        city: this.city,
+        city_code: this.city_code,
         status: this.status,
         start_at,
         end_at,

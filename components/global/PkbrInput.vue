@@ -1,10 +1,17 @@
 <template>
-  <validation-provider v-slot="{ errors }" :name="name" :rules="rules">
-    <v-text-field
+  <validation-provider
+    v-slot="{ errors }"
+    :name="name"
+    :rules="rules"
+    tag="div"
+  >
+    <component
+      :is="componentType"
       v-model="tempValue"
       :error-messages="errors"
       :placeholder="placeholder"
       :type="type"
+      :rows="rows"
       clearable
       outlined
       dense
@@ -16,7 +23,7 @@
       <template v-slot:append-outer>
         <slot name="append-outer" />
       </template>
-    </v-text-field>
+    </component>
   </validation-provider>
 </template>
 
@@ -32,7 +39,7 @@ export default {
       default: ''
     },
     value: {
-      type: String,
+      type: [String, File],
       default: ''
     },
     placeholder: {
@@ -58,6 +65,15 @@ export default {
     }
   },
   computed: {
+    componentType() {
+      let type = 'v-text-field'
+      if (this.type === 'file') {
+        type = 'v-file-input'
+      } else if (this.type === 'text-area') {
+        type = 'v-textarea'
+      }
+      return type
+    },
     isRequired() {
       return !!this.label && this.rules.split('|').includes('required')
     }

@@ -4,6 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { lowerCase } from 'lodash'
 import { EVENT_SUCCESS_UPDATE } from '@/utilities/constant'
 import EventForm from '@/components/EventForm'
 
@@ -45,7 +46,7 @@ export default {
           message: EVENT_SUCCESS_UPDATE,
           type: 'success'
         })
-        this.$router.push('/events')
+        this.$router.push(`/events?status=${lowerCase(payload.status)}`)
       } catch (error) {
         this.$toast.show({ message: error.message, type: 'error' })
       }

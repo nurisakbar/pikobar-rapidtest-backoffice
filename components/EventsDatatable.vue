@@ -16,7 +16,7 @@
         <div class="d-flex">
           <v-col cols="12">
             Status:
-            <v-btn-toggle v-model="statusTable" color="primary" class="pl-2">
+            <v-btn-toggle v-model="stat" color="primary" class="pl-2">
               <v-btn small value="draft">
                 DRAFT
               </v-btn>
@@ -29,7 +29,7 @@
         <div class="d-flex">
           <v-col cols="auto">
             <v-text-field
-              v-model="filterSearch"
+              v-model="searchKey"
               label="Nama Kegiatan"
               clearable
               outlined
@@ -116,12 +116,14 @@
 </template>
 
 <script>
+import { isEqual } from 'lodash'
 import {
   SUCCESS_DELETE,
   FAILED_DELETE,
   CONFIRM_DELETE
 } from '@/utilities/constant'
 import { getChipColor } from '@/utilities/formater'
+
 const headers = [
   { text: 'Nama Kegiatan', value: 'event_name', sortable: false, width: 150 },
   { text: 'Tanggal Mulai', value: 'start_at', width: 180 },
@@ -154,13 +156,11 @@ export default {
   data() {
     return {
       headers,
-      filterSearch: null,
       selectedEvent: {
         id: null,
         name: null
       },
-      deleteModal: false,
-      statusTable: 'published'
+      deleteModal: false
     }
   },
 
@@ -186,32 +186,36 @@ export default {
       return this.$store.getters['events/getTotalData']
     },
     stat: {
-      set(value) {
-        this.statusTable = value
+      async set(value) {
+        await this.$store.dispatch('events/resetOptions')
+        this.options = {
+          ...this.options,
+          status: typeof value === 'object' ? value[0] : value
+        }
       },
       get() {
-        return this.options.status[0]
+        return this.$route.query.status
+      }
+    },
+    searchKey: {
+      async set(value) {
+        await this.$store.dispatch('events/resetOptions')
+        this.options = {
+          ...this.options,
+          keyWords: value
+        }
+      },
+      get() {
+        return this.$route.query.keyWords
       }
     }
   },
 
   watch: {
-    options(value) {
-      this.$emit('optionChanged', value)
-      this.statusTable =
-        typeof value.status === 'object' ? value.status[0] : value.status
-    },
-    async statusTable(value) {
-      await this.$store.dispatch('events/resetOptions')
-      const q = {
-        ...this.$route.query,
-        status: typeof value === 'object' ? value[0] : value
+    async options(value, oldValue) {
+      if (!isEqual(oldValue, value)) {
+        await this.$emit('optionChanged', value)
       }
-      this.$router.replace(this.$route.path, { query: q })
-      // this.options = {
-      //   ...this.options,
-      //   status: typeof value === 'object' ? value[0] : value
-      // }
     }
   },
 
@@ -229,10 +233,10 @@ export default {
     if (this.$route.query.sortOrder) {
       options.sortOrder = [this.$route.query.sortOrder]
     }
-    if (this.$route.query.status) {
-      options.status = [this.$route.query.status]
-      this.statusTable = this.$route.query.status
+    if (this.$route.query.keyWords) {
+      options.keyWords = this.$route.query.keyWords
     }
+    options.status = this.$route.query.status || 'published'
     this.options = options
   },
 

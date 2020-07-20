@@ -11,8 +11,7 @@ export const CONFIRM_DELETE =
   'Apakah anda yakin akan menghapus data kegiatan dengan ID: '
 export const DEFAULT_FILTER = {
   sortBy: ['created_at'],
-  sortOrder: 'desc',
-  status: 'published'
+  sortOrder: 'desc'
 }
 export const DEFAULT_PAGINATION = {
   perPage: 15,

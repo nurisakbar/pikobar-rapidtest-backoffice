@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { mapKeys, camelCase, snakeCase } from 'lodash'
+import { mapKeys, camelCase, snakeCase, debounce } from 'lodash'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '@/utilities/constant'
 
 export const state = () => ({
@@ -50,7 +50,8 @@ export const mutations = {
       sortBy: payload.sortBy,
       sortDesc: payload.sortDesc,
       sortOrder: payload.sortOrder,
-      status: payload.status
+      status: payload.status,
+      keyWords: payload.keyWords
     }
     s.pagination = {
       itemsPerPage: payload.itemsPerPage - 0,
@@ -97,18 +98,29 @@ export const actions = {
     await commit('RESET_FILTER')
   },
 
+  async getRecords({ commit, dispatch }, debounced) {
+    if (debounced) {
+      commit('SET_LOADING', true)
+      await dispatch('getListDebounced')
+    } else {
+      await dispatch('getList')
+    }
+  },
+
+  getListDebounced: debounce(({ dispatch }) => dispatch('getList'), 500),
+
   async getList({ commit, state }) {
     commit('SET_LOADING', true)
 
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
-      const { search, sortBy, sortOrder, status } = filter
+      const { sortBy, sortOrder, status, keyWords } = filter
       const query = mapKeys(
         {
           page,
           perPage: itemsPerPage,
-          search,
+          search: keyWords,
           sortBy: sortBy[0] || null,
           sortOrder: sortOrder[0] ? 'desc' : 'asc',
           status

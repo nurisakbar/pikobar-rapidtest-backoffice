@@ -28,7 +28,16 @@
 </template>
 
 <script>
+import VTextField from 'vuetify/es5/components/VTextField'
+import VTextarea from 'vuetify/es5/components/VTextarea'
+import VFileInput from 'vuetify/es5/components/VFileInput'
+
 export default {
+  components: {
+    VTextField,
+    VTextarea,
+    VFileInput
+  },
   props: {
     label: {
       type: String,
@@ -66,11 +75,11 @@ export default {
   },
   computed: {
     componentType() {
-      let type = 'v-text-field'
+      let type = VTextField
       if (this.type === 'file') {
-        type = 'v-file-input'
+        type = VFileInput
       } else if (this.type === 'text-area') {
-        type = 'v-textarea'
+        type = VTextarea
       }
       return type
     },

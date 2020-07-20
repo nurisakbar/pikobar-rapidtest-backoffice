@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { pickBy, identity, isEqual } from 'lodash'
+import { pickBy, identity } from 'lodash'
 import { mapGetters } from 'vuex'
 import EventsDatatable from '@/components/EventsDatatable'
 
@@ -26,8 +26,11 @@ export default {
 
   watch: {
     '$route.query': {
-      handler(value) {
-        this.$store.dispatch('events/getList')
+      handler(value, oldValue) {
+        this.$store.dispatch(
+          'events/getRecords',
+          value.keyWords !== oldValue.keyWords
+        )
       },
       deep: true
     }
@@ -50,15 +53,13 @@ export default {
       query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
       query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
       query.status = value.status
+      query.keyWords = value.keyWords
       query = pickBy(query, identity)
-      if (!isEqual(query, this.$route.query)) {
-        this.$router
-          .replace({
-            name: this.$router.name,
-            query
-          })
-          .catch(() => {})
-      }
+      this.$router
+        .replace({
+          query
+        })
+        .catch(() => {})
     }
   },
 

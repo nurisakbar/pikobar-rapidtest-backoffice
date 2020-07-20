@@ -59,6 +59,10 @@ export default {
     VuetifyLogo
   },
 
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [])
+  },
+
   head() {
     return {
       title: 'Welcome'

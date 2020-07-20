@@ -5,7 +5,10 @@ export const FAILED_IMPORT = 'Import data gagal'
 export const EVENT_BLAST_EMPTY = 'Anda Belum Memilih Peserta'
 export const EVENT_PARTICIPANTS_EMPTY = 'Peserta Kegiatan kosong'
 export const EVENT_BLAST_SUCCESS = 'Notifikasi berhasil di kirim'
-
+export const SUCCESS_DELETE = 'Data berhasil di hapus'
+export const FAILED_DELETE = 'Maaf, ada kesalahan dalam menghapus data'
+export const CONFIRM_DELETE =
+  'Apakah anda yakin akan menghapus data kegiatan dengan ID: '
 export const DEFAULT_FILTER = {
   sortBy: ['created_at'],
   sortOrder: 'desc',

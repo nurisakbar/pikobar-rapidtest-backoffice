@@ -20,7 +20,7 @@
       <v-divider></v-divider>
       <v-list nav dense :class="!miniVariant && 'px-0'" class="pikobar-nav">
         <v-list-item-group v-model="activeItem" color="primary">
-          <nuxt-link v-for="(item, i) in items" :key="i" :to="item.to">
+          <nuxt-link v-for="(item, i) in menuItems" :key="i" :to="item.to">
             <v-list-item
               v-if="permissions.includes(item.permission)"
               :value="item.to"
@@ -52,15 +52,27 @@
         </v-list-item>
       </template>
     </v-navigation-drawer>
-    <v-app-bar app dark color="primary">
+    <v-app-bar app dark class="bg-navbar">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn icon @click.stop="miniVariant = !miniVariant">
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
     </v-app-bar>
-    <v-main>
+    <v-main class="blue-grey lighten-5">
       <v-container>
+        <v-breadcrumbs
+          :items="getItems"
+          class="primary--text pa-0 font-weight-bold mb-4"
+          large
+        >
+          <template v-slot:item="{ item }">
+            <span v-if="item.disabled" class="text-h6">{{ item.text }}</span>
+            <nuxt-link v-else class="text-h6 v-breadcrumbs__item" :to="item.to">
+              {{ item.text }}
+            </nuxt-link>
+          </template>
+        </v-breadcrumbs>
         <nuxt />
       </v-container>
 
@@ -106,7 +118,7 @@ export default {
       drawer: true,
       fixed: false,
       activeItem: null,
-      items: [
+      menuItems: [
         {
           icon: 'mdi-apps',
           title: 'Welcome',
@@ -147,7 +159,8 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['user', 'roleLabel', 'permissions'])
+    ...mapGetters('auth', ['user', 'roleLabel', 'permissions']),
+    ...mapGetters('breadcrumbs', ['getItems'])
   },
 
   async created() {

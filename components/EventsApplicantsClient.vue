@@ -57,7 +57,7 @@
         item-key="rdt_applicant_id"
       >
         <template v-slot:item.applicant.status="{ value }">
-          <v-chip small class="ma-2" :color="vUndanganalue | getChipColor">
+          <v-chip small class="ma-2" :color="value | getChipColor">
             {{ value }}
           </v-chip>
         </template>

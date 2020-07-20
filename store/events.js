@@ -30,7 +30,7 @@ export const mutations = {
   },
   RESET_PAGINATION(state) {
     const s = state
-    s.pagination = DEFAULT_PAGINATION
+    s.pagination = { ...s.pagination, ...DEFAULT_PAGINATION }
   },
   SET_FILTER(state, payload) {
     const s = state
@@ -38,7 +38,7 @@ export const mutations = {
   },
   RESET_FILTER(state) {
     const s = state
-    s.filter = DEFAULT_FILTER
+    s.filter = { ...s.filter, ...DEFAULT_FILTER }
   },
   SET_TABLE_OPTIONS(state, payload) {
     const s = state
@@ -92,6 +92,11 @@ export const getters = {
 }
 
 export const actions = {
+  async resetOptions({ commit }) {
+    await commit('RESET_PAGINATION')
+    await commit('RESET_FILTER')
+  },
+
   async getList({ commit, state }) {
     commit('SET_LOADING', true)
 
@@ -160,6 +165,16 @@ export const actions = {
     commit('SET_LOADING', true)
     try {
       await this.$axios.$put(`/rdt/events/${state.current.id}`, payload)
+    } catch (error) {
+      throw new Error(error)
+    } finally {
+      commit('SET_LOADING', false)
+    }
+  },
+  async delete({ commit, state }, id) {
+    commit('SET_LOADING', true)
+    try {
+      await this.$axios.$delete(`/rdt/events/${id}`)
     } catch (error) {
       throw new Error(error)
     } finally {

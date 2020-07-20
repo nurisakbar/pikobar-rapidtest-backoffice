@@ -187,11 +187,17 @@ export default {
           ),
           "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
         )
-        return {
-          id: this.formData.schedules[i].id || null,
-          start_at: start_atSch,
-          end_at: end_atSch
-        }
+        const id = (this.formData && this.formData.schedules[i].id) || null
+        return id
+          ? {
+              id,
+              start_at: start_atSch,
+              end_at: end_atSch
+            }
+          : {
+              start_at: start_atSch,
+              end_at: end_atSch
+            }
       })
       const start_at = schedules[0].start_at
       const end_at = schedules[schedules.length - 1].end_at

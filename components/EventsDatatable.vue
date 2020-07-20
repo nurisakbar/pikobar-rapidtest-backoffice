@@ -1,73 +1,126 @@
 <template>
   <div style="width: 100%;">
-    <h2 class="primary--text">
-      {{ title }}
-    </h2>
-    <v-row>
-      <v-col cols="auto">
-        <v-text-field
-          v-model="filterSearch"
-          label="Nama Kegiatan"
-          clearable
-          outlined
-          dense
-        />
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="auto">
-        <v-btn color="primary" to="/events/create">
-          Tambah Kegiatan
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-card>
-      <v-data-table
-        :headers="headers"
-        :items="records"
-        :server-items-length="totalItems"
-        :options.sync="options"
-        :loading="loading"
-        fixed-header
-      >
-        <template v-slot:item.start_at="{ value }">
-          {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
-        </template>
-        <template v-slot:item.end_at="{ value }">
-          {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
-        </template>
-        <template v-slot:item.status="{ value }">
-          <v-chip small class="ma-2" :color="value | getChipColor">
-            {{ value }}
-          </v-chip>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-icon
-            v-if="allow.includes('view-events')"
-            class="mr-2"
-            @click="$router.push(`events/${item.id}`)"
+    <v-data-table
+      class="v-card v-sheet pkbr-table"
+      :headers="headers"
+      :items="records"
+      :server-items-length="totalItems"
+      :options.sync="options"
+      :loading="loading"
+      fixed-header
+      :header-props="{
+        class: 'blue-grey lighten-3'
+      }"
+    >
+      <template slot="top">
+        <div class="d-flex">
+          <v-col cols="12">
+            Status:
+            <v-btn-toggle v-model="statusTable" color="primary" class="pl-2">
+              <v-btn small value="draft">
+                DRAFT
+              </v-btn>
+              <v-btn small value="published">
+                PUBLISHED
+              </v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </div>
+        <div class="d-flex">
+          <v-col cols="auto">
+            <v-text-field
+              v-model="filterSearch"
+              label="Nama Kegiatan"
+              clearable
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto">
+            <v-btn color="primary" to="/events/create">
+              <v-icon class="mr-1">
+                mdi-plus-circle
+              </v-icon>
+              Tambah Kegiatan
+            </v-btn>
+          </v-col>
+        </div>
+      </template>
+      <template v-slot:item.start_at="{ value }">
+        {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
+      </template>
+      <template v-slot:item.end_at="{ value }">
+        {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
+      </template>
+      <template v-slot:item.status="{ value }">
+        <v-chip small class="ma-2" :color="value | getChipColor">
+          {{ value }}
+        </v-chip>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          v-if="allow.includes('view-events')"
+          class="mr-2"
+          @click="$router.push(`events/${item.id}`)"
+        >
+          mdi-card-search
+        </v-icon>
+        <v-icon
+          v-if="allow.includes('manage-events')"
+          class="mr-2"
+          @click="$router.push(`events/${item.id}/edit`)"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          v-if="allow.includes('manage-events')"
+          @click="selectToRemove({ id: item.id, name: item.event_name })"
+        >
+          mdi-delete
+        </v-icon>
+      </template>
+    </v-data-table>
+    <v-dialog v-model="deleteModal" max-width="528">
+      <v-card class="text-center">
+        <v-card-title>
+          <span class="col pl-10">Hapus Kegiatan</span>
+        </v-card-title>
+        <v-card-text>
+          <div>
+            {{ confirmDeleteMsg }}
+          </div>
+          <strong> {{ selectedEvent.name }} </strong>.
+        </v-card-text>
+        <v-card-actions class="pb-6 justify-center">
+          <v-btn
+            color="grey darken-1"
+            outlined
+            class="mr-2 px-2"
+            @click="deleteModal = false"
           >
-            mdi-card-search
-          </v-icon>
-          <v-icon
-            v-if="allow.includes('manage-events')"
-            class="mr-2"
-            @click="$router.push(`events/${item.id}/edit`)"
+            Tidak
+          </v-btn>
+          <v-btn
+            color="error"
+            class="ml-2 px-2"
+            @click="remove(selectedEvent.id)"
           >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            v-if="allow.includes('manage-events')"
-            @click="remove(item.id)"
-          >
-            mdi-delete
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-card>
+            Ya
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import {
+  SUCCESS_DELETE,
+  FAILED_DELETE,
+  CONFIRM_DELETE
+} from '@/utilities/constant'
 import { getChipColor } from '@/utilities/formater'
 const headers = [
   { text: 'Nama Kegiatan', value: 'event_name', sortable: false, width: 150 },
@@ -101,11 +154,20 @@ export default {
   data() {
     return {
       headers,
-      filterSearch: null
+      filterSearch: null,
+      selectedEvent: {
+        id: null,
+        name: null
+      },
+      deleteModal: false,
+      statusTable: 'published'
     }
   },
 
   computed: {
+    confirmDeleteMsg() {
+      return CONFIRM_DELETE + this.selectedEvent.id
+    },
     records() {
       return this.$store.getters['events/getList']
     },
@@ -122,12 +184,34 @@ export default {
     },
     totalItems() {
       return this.$store.getters['events/getTotalData']
+    },
+    stat: {
+      set(value) {
+        this.statusTable = value
+      },
+      get() {
+        return this.options.status[0]
+      }
     }
   },
 
   watch: {
     options(value) {
       this.$emit('optionChanged', value)
+      this.statusTable =
+        typeof value.status === 'object' ? value.status[0] : value.status
+    },
+    async statusTable(value) {
+      await this.$store.dispatch('events/resetOptions')
+      const q = {
+        ...this.$route.query,
+        status: typeof value === 'object' ? value[0] : value
+      }
+      this.$router.replace(this.$route.path, { query: q })
+      // this.options = {
+      //   ...this.options,
+      //   status: typeof value === 'object' ? value[0] : value
+      // }
     }
   },
 
@@ -145,14 +229,33 @@ export default {
     if (this.$route.query.sortOrder) {
       options.sortOrder = [this.$route.query.sortOrder]
     }
+    if (this.$route.query.status) {
+      options.status = [this.$route.query.status]
+      this.statusTable = this.$route.query.status
+    }
     this.options = options
   },
 
   methods: {
-    remove(id) {
+    selectToRemove(payload) {
+      this.selectedEvent = payload
+      this.deleteModal = true
+    },
+    async remove(id) {
       try {
-        this.$store.dispatch('events/remove', id)
-      } catch (error) {}
+        await this.$store.dispatch('events/delete', id)
+        this.$toast.show({
+          message: SUCCESS_DELETE,
+          type: 'success'
+        })
+        await this.$store.dispatch('events/getList')
+        this.deleteModal = false
+      } catch (error) {
+        this.$toast.show({
+          message: error.message || FAILED_DELETE,
+          type: 'error'
+        })
+      }
     }
   }
 }

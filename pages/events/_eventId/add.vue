@@ -2,7 +2,7 @@
   <div class="d-flex flex-column">
     <v-card>
       <v-card-text>
-        <v-row no-gutters>
+        <v-row v-if="getCurrent" no-gutters>
           <v-col cols="8" class="pr-4">
             <v-row>
               <v-col cols="auto" class="pt-0">
@@ -137,10 +137,9 @@
     <v-dialog v-model="addModal" max-width="528">
       <v-card>
         <v-card-title class="subtitle-1">Pilih Kloter Peserta</v-card-title>
-
         <v-card-text>
           Pilih satu kloter untuk menentukan jadwal peserta.
-          <v-radio-group v-model="kloter" column>
+          <v-radio-group v-if="getCurrent" v-model="kloter" column>
             <v-radio
               v-for="(sch, i) in getCurrent.schedules"
               :key="i"
@@ -209,6 +208,25 @@ export default {
     ...mapGetters('events', ['getCurrent'])
   },
 
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [
+      {
+        disabled: false,
+        text: 'Kegiatan',
+        to: '/events'
+      },
+      {
+        disabled: false,
+        text: 'Detail Kegiatan',
+        to: this.$route.path.split('/').slice(0, -1).join('/')
+      },
+      {
+        disabled: true,
+        text: 'Tambah Peserta'
+      }
+    ])
+  },
+
   mounted() {
     if (this.$route.query.page) {
       this.page = parseInt(this.$route.query.page)
@@ -253,6 +271,7 @@ export default {
           message: SUCCESS_IMPORT,
           type: 'success'
         })
+        this.$router.push(this.$route.path.split('/').slice(0, -1).join('/'))
         this.importModal = true
       } catch (error) {
         this.$toast.show({

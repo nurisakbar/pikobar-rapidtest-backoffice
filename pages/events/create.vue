@@ -11,6 +11,19 @@ export default {
   components: {
     EventForm
   },
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [
+      {
+        disabled: false,
+        text: 'Kegiatan',
+        to: '/events'
+      },
+      {
+        disabled: true,
+        text: 'Tambah Kegiatan'
+      }
+    ])
+  },
   methods: {
     async doStore(payload) {
       try {

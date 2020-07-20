@@ -33,6 +33,15 @@ export default {
     }
   },
 
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [
+      {
+        disabled: true,
+        text: 'Kegiatan'
+      }
+    ])
+  },
+
   methods: {
     onOptionChange(value) {
       let query = { ...this.$route.query }
@@ -40,6 +49,7 @@ export default {
       query.perPage = value.itemsPerPage || null
       query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
       query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
+      query.status = value.status
       query = pickBy(query, identity)
       if (!isEqual(query, this.$route.query)) {
         this.$router

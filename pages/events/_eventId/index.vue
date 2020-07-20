@@ -1,7 +1,7 @@
 <template>
   <v-flex>
     <EventView :data="getCurrent" />
-    <ApplicantDatatable :id-event="getCurrent.id" />
+    <ApplicantDatatable v-if="getCurrent" :id-event="getCurrent.id" />
   </v-flex>
 </template>
 
@@ -19,7 +19,7 @@ export default {
     ApplicantDatatable
   },
   computed: {
-    ...mapGetters('events', ['getCurrent']),
+    ...mapGetters('events', ['getCurrent', 'getLoading']),
     options: {
       set(value) {
         this.$store.commit('eventParticipants/SET_TABLE_OPTIONS', value)
@@ -30,20 +30,23 @@ export default {
     }
   },
 
-  watch: {
-    // '$route.query': {
-    //   handler(value) {
-    //     this.$store.dispatch(
-    //       'eventParticipants/getList',
-    //       this.$route.params.eventId
-    //     )
-    //   },
-    //   deep: true
-    // }
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [
+      {
+        disabled: false,
+        text: 'Kegiatan',
+        to: '/events'
+      },
+      {
+        disabled: true,
+        text: 'Detail Kegiatan'
+      }
+    ])
   },
 
   mounted() {
     if (this.$route.params.eventId) {
+      this.$store.dispatch('events/resetOptions')
       this.$store.dispatch('events/getCurrent', this.$route.params.eventId)
       const opt = { ...this.options }
       opt.itemsPerPage = 5000

@@ -15,6 +15,21 @@ export default {
   computed: {
     ...mapGetters('events', ['getCurrent'])
   },
+
+  created() {
+    this.$store.dispatch('breadcrumbs/setItems', [
+      {
+        disabled: false,
+        text: 'Kegiatan',
+        to: '/events'
+      },
+      {
+        disabled: true,
+        text: 'Edit Kegiatan'
+      }
+    ])
+  },
+
   mounted() {
     if (this.$route.params.eventId) {
       this.$store.dispatch('events/getCurrent', this.$route.params.eventId)
@@ -30,9 +45,7 @@ export default {
           message: EVENT_SUCCESS_UPDATE,
           type: 'success'
         })
-        setTimeout(() => {
-          this.$router.push('/events')
-        }, 2000)
+        this.$router.push('/events')
       } catch (error) {
         this.$toast.show({ message: error.message, type: 'error' })
       }

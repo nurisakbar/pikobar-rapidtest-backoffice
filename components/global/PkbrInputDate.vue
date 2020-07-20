@@ -35,8 +35,6 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
   props: {
     label: {
@@ -87,16 +85,20 @@ export default {
       this.tempValue = this.parseDate(this.tempValueFormated)
     },
     doCalendarClick(val) {
-      this.tempValue = moment(val, 'YYYY-MM-DD').format()
+      this.tempValue = this.$dateFns.format(val, "yyyy-MM-dd'T'HH:mm:ssxxx")
       this.showCalendar = false
     },
     formatDate(date) {
       if (!date) return null
-      return moment(date).format('DD-MM-YYYY')
+      return this.$dateFns.format(new Date(date), 'dd-MM-yyyy')
     },
     parseDate(date) {
       if (!date) return null
-      return moment(date, 'DD-MM-YYYY').format()
+      const [tgl, bln, thn] = date.split('-')
+      return this.$dateFns.format(
+        new Date(thn, bln - 1, tgl),
+        "yyyy-MM-dd'T'HH:mm:ssxxx"
+      )
     }
   }
 }

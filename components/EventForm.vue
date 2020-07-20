@@ -109,7 +109,6 @@
 
 <script>
 /* eslint-disable camelcase */
-import moment from 'moment'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -155,7 +154,12 @@ export default {
       this.host_name = val ? val.host_name : null
       this.event_location = val ? val.event_location : null
       this.city_code = val && val.city ? val.city.code : null
-      this.tanggal = val ? moment(val.start_at).format() : null
+      this.tanggal = val
+        ? this.$dateFns.format(
+            val.start_at.split(':')[0],
+            "yyyy-MM-dd'T'HH:mm:ssxxx"
+          )
+        : null
       this.kloter = kloter
     }
   },

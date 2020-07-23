@@ -29,7 +29,7 @@ export default {
       handler(value, oldValue) {
         this.$store.dispatch(
           'events/getRecords',
-          value.keyWords !== oldValue.keyWords
+          value.keyWords !== oldValue.keyWords || value.page !== oldValue.page
         )
       },
       deep: true

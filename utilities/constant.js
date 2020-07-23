@@ -9,12 +9,23 @@ export const SUCCESS_DELETE = 'Data berhasil di hapus'
 export const FAILED_DELETE = 'Maaf, ada kesalahan dalam menghapus data'
 export const CONFIRM_DELETE =
   'Apakah anda yakin akan menghapus data kegiatan dengan ID: '
+export const SUCCESS_ADD_PARTICIPANTS =
+  'Peserta berhasil di daftarkan dalam kegiatan'
+export const FAILED_ADD_PARTICIPANTS =
+  'Maaf, ada kesalahan dalam mendaftarkan peserta'
+
 export const DEFAULT_FILTER = {
+  groupBy: [],
+  groupDesc: [],
   sortBy: ['created_at'],
-  sortOrder: 'desc'
+  sortDesc: [false],
+  sortOrder: 'desc',
+  status: 'published',
+  multiSort: false,
+  mustSort: false,
+  keyWords: undefined
 }
 export const DEFAULT_PAGINATION = {
-  perPage: 15,
   page: 1,
   itemsPerPage: 10,
   total: 0

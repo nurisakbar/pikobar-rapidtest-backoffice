@@ -7,6 +7,7 @@
       :item-text="itemText"
       :item-value="itemValue"
       outlined
+      :hide-details="hideDetails"
       dense
     >
       <template v-slot:label>
@@ -57,6 +58,10 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    hideDetails: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

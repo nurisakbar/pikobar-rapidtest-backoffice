@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { mapKeys, camelCase, snakeCase, debounce } from 'lodash'
+import { mapKeys, snakeCase, debounce } from 'lodash'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '@/utilities/constant'
 
 export const state = () => ({
@@ -93,14 +93,35 @@ export const getters = {
 }
 
 export const actions = {
-  async resetOptions({ commit }) {
-    await commit('RESET_PAGINATION')
-    await commit('RESET_FILTER')
+  resetOptions({ commit }) {
+    commit('RESET_PAGINATION')
+    commit('RESET_FILTER')
   },
 
-  async getRecords({ commit, dispatch }, debounced) {
+  resetPagination({ commit }) {
+    commit('RESET_PAGINATION')
+  },
+
+  resetFilter({ commit }) {
+    commit('RESET_FILTER')
+  },
+
+  async addAplicants({ commit }, { idEvent, applicants }) {
+    commit('SET_LOADING', true)
+    try {
+      await this.$axios.$post(`/rdt/events/${idEvent}/participants`, {
+        applicants
+      })
+    } catch (error) {
+      throw new Error(error)
+    } finally {
+      commit('SET_LOADING', false)
+    }
+  },
+
+  async getRecords({ commit, dispatch, state }, debounced) {
     if (debounced) {
-      commit('SET_LOADING', true)
+      if (!state.loading) commit('SET_LOADING', true)
       await dispatch('getListDebounced')
     } else {
       await dispatch('getList')
@@ -131,17 +152,11 @@ export const actions = {
         params: query,
         progress: false
       })
-      const tablePagination = mapKeys(
-        {
-          itemsPerPage: parseInt(meta.per_page),
-          ...meta
-        },
-        (value, key) => camelCase(key)
-      )
       commit('SET_DATA', data)
       commit('SET_PAGINATION', {
-        page: tablePagination.currentPage,
-        ...tablePagination
+        page: parseInt(meta.current_page),
+        itemsPerPage: parseInt(meta.per_page),
+        total: parseInt(meta.total)
       })
     } catch (e) {
       //

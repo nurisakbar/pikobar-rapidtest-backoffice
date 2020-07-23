@@ -13,6 +13,7 @@
               clearable
               outlined
               dense
+              hide-details
               @keyup.enter="doFilter"
             />
           </v-col>
@@ -25,12 +26,14 @@
               placeholder="Semua Kab./Kota"
               item-text="name"
               item-value="code"
+              hide-details
               allow-null
             />
           </v-col>
         </v-row>
       </v-card-title>
       <v-data-table
+        v-model="tempValue"
         :headers="headers"
         :items="records"
         :loading="loading"
@@ -155,6 +158,11 @@ export default {
   },
 
   props: {
+    value: {
+      type: Array,
+      default: () => []
+    },
+
     title: {
       type: String,
       default: 'Calon Peserta'
@@ -203,6 +211,7 @@ export default {
 
   data() {
     return {
+      tempValue: this.value,
       editDialog: false,
       editRecordId: null,
       viewDialog: false,
@@ -221,6 +230,15 @@ export default {
     ...mapGetters('area', ['getKabkot']),
     filterData() {
       return `${this.filterSearch || ''}-${this.filterCity || ''}`
+    }
+  },
+
+  watch: {
+    value(value) {
+      this.tempValue = value
+    },
+    tempValue(value) {
+      this.$emit('input', value)
     }
   },
 

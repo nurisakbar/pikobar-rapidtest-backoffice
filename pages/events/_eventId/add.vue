@@ -82,6 +82,7 @@
       </v-card-actions>
     </v-card>
     <applicants-datatable
+      v-model="applicants"
       title="Daftar Calon Peserta RDT"
       class="mt-4"
       status="new"
@@ -170,7 +171,7 @@
           >
             Batal
           </v-btn>
-          <v-btn color="primary" class="ml-2 px-2">
+          <v-btn color="primary" class="ml-2 px-2" @click="addApplicants">
             Tambah
           </v-btn>
         </v-card-actions>
@@ -181,7 +182,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { SUCCESS_IMPORT, FAILED_IMPORT } from '@/utilities/constant'
+import {
+  SUCCESS_IMPORT,
+  FAILED_IMPORT,
+  SUCCESS_ADD_PARTICIPANTS,
+  FAILED_ADD_PARTICIPANTS
+} from '@/utilities/constant'
 import ApplicantsDatatable from '@/components/ApplicantsDatatableClient'
 
 export default {
@@ -199,7 +205,8 @@ export default {
       addModal: false,
       importModal: false,
       importFile: null,
-      kloter: null
+      kloter: null,
+      applicants: []
     }
   },
 
@@ -251,6 +258,29 @@ export default {
   },
 
   methods: {
+    async addApplicants() {
+      try {
+        const applicants = this.applicants.map((applicant) => ({
+          rdt_applicant_id: applicant.id
+        }))
+        await this.$store.dispatch('events/addAplicants', {
+          idEvent: this.getCurrent.id,
+          applicants
+        })
+        this.$toast.show({
+          message: SUCCESS_ADD_PARTICIPANTS,
+          type: 'success'
+        })
+        this.$router.push(this.$route.path.split('/').slice(0, -1).join('/'))
+      } catch (error) {
+        this.$toast.show({
+          message: error.message || FAILED_ADD_PARTICIPANTS,
+          type: 'error'
+        })
+      } finally {
+        this.addModal = false
+      }
+    },
     openAddModal() {
       this.kloter = null
       this.addModal = true
@@ -272,12 +302,13 @@ export default {
           type: 'success'
         })
         this.$router.push(this.$route.path.split('/').slice(0, -1).join('/'))
-        this.importModal = true
       } catch (error) {
         this.$toast.show({
           message: error.message || FAILED_IMPORT,
           type: 'error'
         })
+      } finally {
+        this.importModal = true
       }
     }
   },

@@ -6,33 +6,40 @@
           <v-col cols="12" class="pt-0">
             {{ title }}
           </v-col>
-          <v-col cols="3" class="py-0">
+          <v-col cols="5" class="py-0">
             <v-text-field
               v-model="filterSearch"
               label="Nama Peserta / Nomor Pendaftaran"
               clearable
               outlined
               dense
+              hide-details
               @keyup.enter="doFilter"
             />
           </v-col>
           <v-col cols="3" class="py-0">
-            <v-text-field label="Kota/Kabupaten" outlined dense />
-          </v-col>
-          <v-col cols="3" class="py-0">
-            <v-btn color="primary" @click="doFilter">
-              Search asd
-            </v-btn>
+            <pkbr-select
+              v-model="filterCity"
+              :items="getKabkot"
+              label="Kab./Kota"
+              name="Kab./Kota"
+              placeholder="Semua Kab./Kota"
+              item-text="name"
+              item-value="code"
+              hide-details
+              allow-null
+            />
           </v-col>
         </v-row>
       </v-card-title>
       <v-data-table
+        v-model="tempValue"
         :headers="headers"
         :items="records"
-        :server-items-length="totalItems"
-        :options.sync="options"
         :loading="loading"
         :show-select="showSelect"
+        :custom-filter="doFilter"
+        :search="filterData"
       >
         <template v-slot:item.invitations="{ item }">
           <v-layout justify-start>
@@ -73,7 +80,7 @@
           </v-layout>
         </template>
         <template v-slot:item.created_at="{ item }">
-          <v-layout justify-end>
+          <v-layout>
             {{
               $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm')
             }}
@@ -110,6 +117,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApplicantEditDialog from '@/components/ApplicantEditDialog'
 import ApplicantViewDialog from '@/components/ApplicantViewDialog'
 
@@ -123,17 +131,22 @@ const headers = [
   { text: 'Nama Peserta', value: 'name', width: 250 },
   { text: 'Status Kesehatan', value: 'person_status', width: 150 },
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },
-  { text: 'Usia (Thn)', value: 'age', width: 120 },
+  { text: 'Usia (Thn)', value: 'age', width: 120, align: 'end' },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
   { text: 'Kecamatan', value: 'district.name', sortable: false, width: 200 },
   { text: 'Kelurahan', value: 'village.name', sortable: false, width: 200 },
-  { text: 'Riwayat Kontak', value: 'symptoms_interaction', width: 150 },
+  {
+    text: 'Riwayat Kontak',
+    value: 'symptoms_interaction',
+    width: 150,
+    align: 'center'
+  },
   { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
   {
     text: 'Riwayat Undangan',
     value: 'invitations',
     sortable: false,
-    width: 300
+    width: 200
   },
   { text: 'Tanggal Terdaftar', value: 'created_at', width: 180 },
   { text: 'Actions', value: 'actions', sortable: false, width: 150 }
@@ -145,44 +158,14 @@ export default {
   },
 
   props: {
+    value: {
+      type: Array,
+      default: () => []
+    },
+
     title: {
       type: String,
       default: 'Calon Peserta'
-    },
-
-    routerName: {
-      type: String,
-      default: 'applicants'
-    },
-
-    status: {
-      type: String,
-      default: 'new'
-    },
-
-    page: {
-      type: Number,
-      default: 1
-    },
-
-    perPage: {
-      type: Number,
-      default: 15
-    },
-
-    sortBy: {
-      type: String,
-      default: 'name'
-    },
-
-    sortOrder: {
-      type: String,
-      default: 'asc'
-    },
-
-    allowList: {
-      type: Boolean,
-      default: false
     },
 
     allowView: {
@@ -205,6 +188,11 @@ export default {
       default: false
     },
 
+    status: {
+      type: String,
+      default: 'new'
+    },
+
     noHead: {
       type: Boolean,
       default: false
@@ -223,6 +211,7 @@ export default {
 
   data() {
     return {
+      tempValue: this.value,
       editDialog: false,
       editRecordId: null,
       viewDialog: false,
@@ -231,74 +220,61 @@ export default {
         ? headers.filter((head) => head.value !== 'actions')
         : headers,
       records: [],
-      options: {
-        page: this.page,
-        itemsPerPage: this.perPage,
-        sortBy: [this.sortBy],
-        sortDesc: [this.sortOrder === 'desc'],
-        status: this.status
-      },
       loading: true,
       filterSearch: null,
-      totalItems: 0
+      filterCity: null
+    }
+  },
+
+  computed: {
+    ...mapGetters('area', ['getKabkot']),
+    filterData() {
+      return `${this.filterSearch || ''}-${this.filterCity || ''}`
     }
   },
 
   watch: {
-    page(value) {
-      this.options.page = value
+    value(value) {
+      this.tempValue = value
     },
-    perPage(value) {
-      this.options.itemsPerPage = value
-    },
-    sortBy(value) {
-      this.options.sortBy = [value]
-    },
-    sortOrder(value) {
-      this.options.sortDesc = [value === 'desc']
-    },
-    options: {
-      handler() {
-        this.getRecords()
-      },
-      deep: true
+    tempValue(value) {
+      this.$emit('input', value)
     }
+  },
+
+  mounted() {
+    this.getRecords()
   },
 
   methods: {
     doFilterReset() {
       this.filterSearch = null
-      this.doFilter()
     },
 
-    doFilter() {
-      this.getRecords()
+    doFilter(value, search, item) {
+      return (
+        !!value &&
+        !!search &&
+        (this.filterCity ? this.filterCity === item.city.code : true) &&
+        (this.filterSearch
+          ? value.toString().includes(this.filterSearch)
+          : true)
+      )
     },
 
     async getRecords() {
       this.loading = true
-
       const query = {
-        search: this.filterSearch,
-        sort_by: this.options.sortBy[0],
-        sort_order: this.options.sortDesc[0] === true ? 'desc' : 'asc',
-        per_page:
-          this.options.itemsPerPage < 0 ? 5000 : this.options.itemsPerPage,
-        page: this.options.page,
+        per_page: 5000,
         status: this.status
       }
-
       try {
         const { data, meta } = await this.$axios.$get('/rdt/applicants', {
           params: query,
           progress: false
         })
-
         this.records = data
         this.totalItems = meta.total
-        await this.$router.replace({
-          query
-        })
       } catch (e) {
         //
       } finally {

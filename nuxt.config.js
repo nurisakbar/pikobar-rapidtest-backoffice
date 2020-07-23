@@ -2,7 +2,6 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
-
   env: {
     appEnv: process.env.APP_ENV || 'local',
     appName: process.env.APP_NAME || 'Application',
@@ -42,7 +41,14 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/axios', '~/plugins/keycloak'],
+  plugins: [
+    '~/plugins/axios',
+    '~/plugins/keycloak',
+    '~/plugins/global-components',
+    '~/plugins/validation',
+    '~/plugins/toast',
+    '~/plugins/alert'
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -86,6 +92,9 @@ export default {
           success: colors.green.accent3
         }
       }
+    },
+    options: {
+      customProperties: true
     }
   },
 

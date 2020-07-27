@@ -204,14 +204,13 @@ export const actions = {
 
   async importPeserta({ commit }, { idEvent, formData }) {
     commit('SET_LOADING_IMPORT', true)
-
     try {
       await this.$axios.$post(
         `/rdt/events/${idEvent}/participants-import`,
         formData
       )
     } catch (e) {
-      throw new Error(e.response.data.errors.file[0])
+      throw new Error(e.response.data.message)
     } finally {
       commit('SET_LOADING_IMPORT', false)
     }

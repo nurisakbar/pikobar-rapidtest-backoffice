@@ -113,7 +113,7 @@ export const actions = {
         applicants
       })
     } catch (error) {
-      throw new Error(error)
+      throw new Error(error.response.data.message)
     } finally {
       commit('SET_LOADING', false)
     }

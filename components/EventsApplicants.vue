@@ -131,7 +131,7 @@ export default {
       options.page = parseInt(this.$route.query.page)
     }
     if (this.$route.query.perPage) {
-      options.perPage = parseInt(this.$route.query.perPage)
+      options.itemsPerPage = parseInt(this.$route.query.perPage)
     }
     if (this.$route.query.sortBy) {
       options.sortBy = [this.$route.query.sortBy]

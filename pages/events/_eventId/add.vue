@@ -97,6 +97,7 @@
       <v-card>
         <validation-observer
           v-slot="{ valid, handleSubmit }"
+          ref="observerImport"
           tag="div"
           class="v-card__text"
         >
@@ -138,43 +139,71 @@
     <v-dialog v-model="addModal" max-width="528">
       <v-card>
         <v-card-title class="subtitle-1">Pilih Kloter Peserta</v-card-title>
-        <v-card-text>
-          Pilih satu kloter untuk menentukan jadwal peserta.
-          <v-radio-group v-if="getCurrent" v-model="kloter" column>
-            <v-radio
-              v-for="(sch, i) in getCurrent.schedules"
-              :key="i"
-              :value="sch.id"
-              label="red"
-              color="primary"
+        <validation-observer
+          v-slot="{ valid, handleSubmit }"
+          ref="observerKloter"
+          tag="div"
+          class="v-card__text"
+        >
+          <form @submit.prevent="handleSubmit(addApplicants)">
+            Pilih satu kloter untuk menentukan jadwal peserta.
+            <validation-provider
+              v-slot="{ errors }"
+              name="Kloter"
+              rules="required"
             >
-              <template slot="label">
-                <strong class="mr-2">Kloter {{ i + 1 }}</strong>
-                ({{
-                  $dateFns.format(new Date(sch.start_at.split('.')[0]), 'HH:mm')
-                }}
-                -
-                {{
-                  $dateFns.format(new Date(sch.end_at.split('.')[0]), 'HH:mm')
-                }})
-              </template>
-            </v-radio>
-          </v-radio-group>
-        </v-card-text>
-
-        <v-card-actions class="pb-6 justify-center">
-          <v-btn
-            color="grey darken-1"
-            outlined
-            class="mr-2 px-2"
-            @click="addModal = false"
-          >
-            Batal
-          </v-btn>
-          <v-btn color="primary" class="ml-2 px-2" @click="addApplicants">
-            Tambah
-          </v-btn>
-        </v-card-actions>
+              <v-radio-group
+                v-if="getCurrent"
+                v-model="kloter"
+                :error-messages="errors"
+                column
+              >
+                <v-radio
+                  v-for="(sch, i) in getCurrent.schedules"
+                  :key="i"
+                  :value="sch.id"
+                  label="red"
+                  color="primary"
+                >
+                  <template slot="label">
+                    <strong class="mr-2">Kloter {{ i + 1 }}</strong>
+                    ({{
+                      $dateFns.format(
+                        new Date(sch.start_at.split('.')[0]),
+                        'HH:mm'
+                      )
+                    }}
+                    -
+                    {{
+                      $dateFns.format(
+                        new Date(sch.end_at.split('.')[0]),
+                        'HH:mm'
+                      )
+                    }})
+                  </template>
+                </v-radio>
+              </v-radio-group>
+            </validation-provider>
+            <v-card-actions class="pb-2 justify-center">
+              <v-btn
+                color="grey darken-1"
+                outlined
+                class="mr-2 px-2"
+                @click="addModal = false"
+              >
+                Batal
+              </v-btn>
+              <v-btn
+                :disabled="!valid"
+                color="primary"
+                class="ml-2 px-2"
+                type="submit"
+              >
+                Tambah
+              </v-btn>
+            </v-card-actions>
+          </form>
+        </validation-observer>
       </v-card>
     </v-dialog>
   </div>
@@ -213,6 +242,15 @@ export default {
   computed: {
     ...mapGetters('auth', ['permissions']),
     ...mapGetters('events', ['getCurrent'])
+  },
+
+  watch: {
+    addModal(show) {
+      if (!show) this.$refs.observerKloter.reset()
+    },
+    importModal(show) {
+      if (!show) this.$refs.observerImport.reset()
+    }
   },
 
   created() {
@@ -258,10 +296,15 @@ export default {
   },
 
   methods: {
+    asd(val) {
+      console.log('asd')
+      console.log(val)
+    },
     async addApplicants() {
       try {
         const applicants = this.applicants.map((applicant) => ({
-          rdt_applicant_id: applicant.id
+          rdt_applicant_id: applicant.id,
+          rdt_event_schedule_id: this.kloter
         }))
         await this.$store.dispatch('events/addAplicants', {
           idEvent: this.getCurrent.id,
@@ -278,7 +321,9 @@ export default {
           type: 'error'
         })
       } finally {
-        this.addModal = false
+        // this.addModal = false
+        // this.kloter = null
+        // this.$refs.observerKloter.reset()
       }
     },
     openAddModal() {
@@ -308,7 +353,9 @@ export default {
           type: 'error'
         })
       } finally {
-        this.importModal = true
+        // this.importModal = false
+        // this.kloter = null
+        // this.$refs.observerImport.reset()
       }
     }
   },

@@ -152,7 +152,6 @@ export const actions = {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
       const { search, sortBy, sortOrder, status } = filter
-      console.log(itemsPerPage)
       const query = mapKeys(
         {
           page,

@@ -32,7 +32,7 @@ extend('phone_number', {
 
 extend('time_range', {
   validate: (value) => {
-    return /^[12]\d:[0-5]\d-[12]\d:[0-5]\d$/.test(value)
+    return /^[0-2]\d:[0-5]\d-[0-2]\d:[0-5]\d$/.test(value)
   },
   message: 'Format Jam tidak benar'
 })

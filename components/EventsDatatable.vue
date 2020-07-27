@@ -238,6 +238,7 @@ export default {
     }
     options.status = this.$route.query.status || 'published'
     this.options = options
+    this.$emit('optionChanged', options)
   },
 
   methods: {

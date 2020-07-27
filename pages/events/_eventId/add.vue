@@ -215,7 +215,8 @@ import {
   SUCCESS_IMPORT,
   FAILED_IMPORT,
   SUCCESS_ADD_PARTICIPANTS,
-  FAILED_ADD_PARTICIPANTS
+  FAILED_ADD_PARTICIPANTS,
+  EVENT_BLAST_EMPTY
 } from '@/utilities/constant'
 import ApplicantsDatatable from '@/components/ApplicantsDatatableClient'
 
@@ -296,12 +297,11 @@ export default {
   },
 
   methods: {
-    asd(val) {
-      console.log('asd')
-      console.log(val)
-    },
     async addApplicants() {
       try {
+        if (this.applicants.length === 0) {
+          throw new Error(EVENT_BLAST_EMPTY)
+        }
         const applicants = this.applicants.map((applicant) => ({
           rdt_applicant_id: applicant.id,
           rdt_event_schedule_id: this.kloter

@@ -21,9 +21,13 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="auto">
+        <v-btn color="success" @click="openModalImportHasil">
+          <v-icon class="mr-1">mdi-file-import-outline</v-icon>
+          Import Hasil Test
+        </v-btn>
         <v-menu bottom offset-y>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn class="pr-1" v-bind="attrs" color="success" v-on="on">
+            <v-btn class="pr-1" v-bind="attrs" color="error" v-on="on">
               Export
               <v-icon class="ml-1">mdi-menu-down</v-icon>
             </v-btn>
@@ -119,6 +123,53 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="ImportModalTest" max-width="528">
+      <validation-observer
+        v-slot="{ valid, handleSubmit }"
+        ref="observerImport"
+        tag="div"
+      >
+        <form ref="importForm" @submit.prevent="handleSubmit(doImport)">
+          <v-card class="text-center">
+            <v-card-title>
+              <span class="col">Import Hasil Test</span>
+            </v-card-title>
+            <v-card-text class="pb-0">
+              <div>
+                Untuk Import data hasil test, anda harus memakai format Excel
+                (.xls).
+              </div>
+              <pkbr-input
+                v-model="importFile"
+                label="Import Hasil Test"
+                type="file"
+                class="mt-4"
+                name="file"
+                rules="required"
+              />
+            </v-card-text>
+            <v-card-actions class="pb-6 justify-center">
+              <v-btn
+                color="grey darken-1"
+                outlined
+                class="mr-2 px-2"
+                @click="ImportModalTest = false"
+              >
+                Batal
+              </v-btn>
+              <v-btn
+                color="primary"
+                :disabled="!valid"
+                class="ml-2 px-2"
+                type="submit"
+              >
+                Upload
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </form>
+      </validation-observer>
+    </v-dialog>
   </div>
 </template>
 
@@ -127,7 +178,9 @@ import { getChipColor } from '@/utilities/formater'
 import {
   EVENT_BLAST_EMPTY,
   EVENT_BLAST_SUCCESS,
-  EVENT_PARTICIPANTS_EMPTY
+  EVENT_PARTICIPANTS_EMPTY,
+  SUCCESS_IMPORT,
+  FAILED_IMPORT
 } from '@/utilities/constant'
 
 const headers = [
@@ -162,7 +215,9 @@ export default {
       headers,
       pesertaSelected: [],
       blastNotifModal: false,
-      modalType: 'Undangan'
+      ImportModalTest: false,
+      modalType: 'Undangan',
+      importFile: null
     }
   },
 
@@ -187,6 +242,37 @@ export default {
     openModalNotif(type) {
       this.modalType = type || this.modalType
       this.blastNotifModal = true
+    },
+    openModalImportHasil() {
+      this.ImportModalTest = true
+    },
+    doImport() {
+      const formData = new FormData()
+      formData.append('file', this.importFile)
+      try {
+        // await this.$store.dispatch('eventParticipants/importPeserta', {
+        //   idEvent: this.getCurrent.id,
+        //   formData
+        // })
+        this.$toast.show({
+          message: SUCCESS_IMPORT,
+          type: 'success'
+        })
+        this.$store.dispatch(
+          'eventParticipants/getList',
+          this.$route.params.eventId
+        )
+        this.ImportModalTest = false
+      } catch (error) {
+        this.$toast.show({
+          message: error.message || FAILED_IMPORT,
+          type: 'error'
+        })
+      } finally {
+        // this.importModal = false
+        // this.kloter = null
+        // this.$refs.observerImport.reset()
+      }
     },
     async blastNotify(invitationsIds, type) {
       if (this.records.length === 0) {

@@ -13,6 +13,7 @@
       :allow-create="permissions.includes('manage-applicants')"
       :allow-edit="permissions.includes('manage-applicants')"
       :allow-delete="permissions.includes('manage-applicants')"
+      :no-actions="true"
     />
   </v-layout>
 </template>

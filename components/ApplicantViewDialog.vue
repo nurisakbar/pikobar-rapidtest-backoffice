@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog :value="open" persistent max-width="800">
+    <v-dialog :value="open" persistent max-width="900">
       <v-card>
         <v-card-title>
           <span class="headline">Lihat Peserta</span>
@@ -26,13 +26,70 @@
                 />
               </v-col>
               <v-col cols="12">
-                <h4>Riwayat Undangan / Hasil Tes</h4>
+                <v-text-field
+                  v-model="address"
+                  label="Alamat Domisili"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="cityName"
+                  label="Kota/Kabupaten"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="districtName"
+                  label="Kecamatan"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="villageName"
+                  label="Desa/Kelurahan"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="occupationType"
+                  label="Jenis Pekerjaan"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="occupationName"
+                  label="Nama Profesi"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="workplaceName"
+                  label="Tempat Bekerja"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <h3>Riwayat Undangan / Hasil Tes</h3>
                 <v-simple-table>
                   <template v-slot:default>
                     <thead>
                       <tr>
-                        <th class="text-left">Event</th>
-                        <th class="text-left">Tanggal Event</th>
+                        <th class="text-left">Nama Kegiatan</th>
+                        <th class="text-left">Tanggal Kegiatan</th>
+                        <th class="text-left">Checkin</th>
                         <th class="text-left">Jenis Tes</th>
                         <th class="text-left">Tanggal Hasil Tes</th>
                         <th class="text-left">Hasil Tes</th>
@@ -62,6 +119,16 @@
                         </td>
                         <td>
                           {{
+                            invitation.attended_at
+                              ? $dateFns.format(
+                                  new Date(invitation.attended_at),
+                                  'dd MMMM yyyy HH:mm'
+                                )
+                              : 'N/A'
+                          }}
+                        </td>
+                        <td>
+                          {{
                             invitation.test_type ? invitation.test_type : 'N/A'
                           }}
                         </td>
@@ -75,7 +142,13 @@
                               : 'N/A'
                           }}
                         </td>
-                        <td>{{ invitation.lab_result_type }}</td>
+                        <td>
+                          {{
+                            invitation.lab_result_type
+                              ? invitation.lab_result_type
+                              : 'N/A'
+                          }}
+                        </td>
                       </tr>
                     </tbody>
                   </template>
@@ -114,6 +187,13 @@ export default {
     return {
       registrationCode: null,
       name: null,
+      address: null,
+      cityName: null,
+      districtName: null,
+      villageName: null,
+      occupationType: null,
+      occupationName: null,
+      workplaceName: null,
       invitations: []
     }
   },
@@ -133,6 +213,13 @@ export default {
 
       this.registrationCode = data.registration_code
       this.name = data.name
+      this.address = data.address
+      this.cityName = data.city ? data.city.name : ''
+      this.districtName = data.district ? data.district.name : ''
+      this.villageName = data.village ? data.village.name : ''
+      this.occupationType = data.occupation_type
+      this.occupationName = data.occupation_name
+      this.workplaceName = data.workplace_name
       this.invitations = data.invitations
     },
 

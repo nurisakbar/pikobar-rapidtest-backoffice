@@ -125,6 +125,9 @@ const headers = [
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },
   { text: 'Usia (Thn)', value: 'age', width: 120 },
   { text: 'Kota/Kab', value: 'city.name', sortable: false, width: 200 },
+  { text: 'Jenis Pekerjaan', value: 'occupation_type', width: 150 },
+  { text: 'Nama Profesi', value: 'occupation_name', width: 250 },
+  { text: 'Tempat Kerja', value: 'workplace_name', width: 250 },
   { text: 'Riwayat Kontak', value: 'symptoms_interaction', width: 150 },
   { text: 'Gejala', value: 'symptoms_notes', sortable: false, width: 300 },
   {

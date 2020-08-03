@@ -26,14 +26,14 @@ export default {
         name: 'description',
         content: process.env.npm_package_description || ''
       },
-      { hid: 'theme-color', name: 'theme-color', content: '#399F4F' }
+      { hid: 'theme-color', name: 'theme-color', content: '#1976D2' }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#2E7D32' },
+  loading: { color: '#2196F3' },
   /*
    ** Global CSS
    */

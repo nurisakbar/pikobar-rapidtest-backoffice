@@ -27,6 +27,22 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
+                  v-model="birthDate"
+                  label="Tanggal Lahir"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="phoneNumber"
+                  label="Nomor Telepon"
+                  filled
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
                   v-model="address"
                   label="Alamat Domisili"
                   filled
@@ -81,7 +97,7 @@
                   readonly
                 />
               </v-col>
-              <v-col cols="12">
+              <v-col v-if="invitations.length > 0" cols="12">
                 <h3>Riwayat Undangan / Hasil Tes</h3>
                 <v-simple-table>
                   <template v-slot:default>
@@ -194,6 +210,8 @@ export default {
       occupationType: null,
       occupationName: null,
       workplaceName: null,
+      phoneNumber: null,
+      birthDate: null,
       invitations: []
     }
   },
@@ -220,6 +238,8 @@ export default {
       this.occupationType = data.occupation_type
       this.occupationName = data.occupation_name
       this.workplaceName = data.workplace_name
+      this.phoneNumber = data.phone_number
+      this.birthDate = data.birth_date
       this.invitations = data.invitations
     },
 

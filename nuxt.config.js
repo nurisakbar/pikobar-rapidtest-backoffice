@@ -17,7 +17,7 @@ export default {
    */
   head: {
     titleTemplate: '%s - ' + process.env.APP_NAME || 'Application',
-    title: process.env.npm_package_name || '',
+    title: process.env.APP_NAME || 'Application',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -26,7 +26,7 @@ export default {
         name: 'description',
         content: process.env.npm_package_description || ''
       },
-      { hid: 'theme-color', name: 'theme-color', content: '#1976D2' }
+      { hid: 'theme-color', name: 'theme-color', content: '#FFFFFF' }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },

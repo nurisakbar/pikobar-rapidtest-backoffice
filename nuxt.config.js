@@ -2,6 +2,10 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
+  generate: {
+    fallback: true
+  },
+
   env: {
     appEnv: process.env.APP_ENV || 'local',
     appName: process.env.APP_NAME || 'Application',

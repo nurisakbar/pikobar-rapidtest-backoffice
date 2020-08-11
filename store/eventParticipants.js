@@ -35,7 +35,8 @@ export const mutations = {
   },
   RESET_PAGINATION(state) {
     const s = state
-    s.pagination = DEFAULT_PAGINATION
+    s.pagination.page = 1
+    s.pagination.itemsPerPage = 10
   },
   SET_FILTER(state, payload) {
     const s = state
@@ -54,12 +55,11 @@ export const mutations = {
       mustSort: payload.mustSort,
       sortBy: payload.sortBy,
       sortDesc: payload.sortDesc,
-      sortOrder: payload.sortOrder
+      keyWords: payload.keyWords
     }
     s.pagination = {
       itemsPerPage: payload.itemsPerPage - 0,
       page: payload.page,
-      perPage: payload.perPage,
       total: payload.total
     }
   },
@@ -118,17 +118,17 @@ export const actions = {
     commit('RESET_FILTER')
   },
 
-  async getRecords({ commit, dispatch, state }, debounced) {
+  async getRecords({ commit, dispatch, state }, { debounced, eventId }) {
     if (debounced) {
       if (!state.loading) commit('SET_LOADING', true)
-      await dispatch('getListDebounced')
+      await dispatch('getListDebounced', eventId)
     } else {
-      await dispatch('getList')
+      await dispatch('getList', eventId)
     }
   },
 
   getListDebounced: debounce(
-    ({ dispatch }, status) => dispatch('getList', status),
+    ({ dispatch }, eventId) => dispatch('getList', eventId),
     500
   ),
 
@@ -138,14 +138,14 @@ export const actions = {
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
-      const { search, sortBy, sortOrder } = filter
+      const { keyWords, sortBy, sortDesc } = filter
       const query = mapKeys(
         {
           page,
           perPage: itemsPerPage,
-          search,
+          search: keyWords,
           sortBy: sortBy[0] || null,
-          sortOrder: sortOrder[0] ? 'desc' : 'asc'
+          sortOrder: sortDesc[0] ? 'desc' : 'asc'
         },
         (value, key) => snakeCase(key)
       )
@@ -159,15 +159,13 @@ export const actions = {
       const tablePagination = mapKeys(
         {
           itemsPerPage: parseInt(meta.per_page),
-          ...meta
+          page: meta.current_page,
+          total: meta.total
         },
         (value, key) => camelCase(key)
       )
       commit('SET_DATA', data)
-      commit('SET_PAGINATION', {
-        page: tablePagination.currentPage,
-        ...tablePagination
-      })
+      commit('SET_PAGINATION', tablePagination)
     } catch (e) {
       //
     } finally {
@@ -181,6 +179,26 @@ export const actions = {
       await this.$axios.$post(
         `/rdt/events/${idEvent}/participants-import`,
         formData
+      )
+    } catch (e) {
+      throw new Error(e.response.data.message)
+    } finally {
+      commit('SET_LOADING_IMPORT', false)
+    }
+  },
+
+  async setLabcode(
+    { commit },
+    { idEvent, rdt_invitation_id, lab_code_sample }
+  ) {
+    commit('SET_LOADING_IMPORT', true)
+    try {
+      await this.$axios.$put(
+        `/rdt/events/${idEvent}/participants-set-labcode`,
+        {
+          rdt_invitation_id,
+          lab_code_sample
+        }
       )
     } catch (e) {
       throw new Error(e.response.data.message)

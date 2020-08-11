@@ -1,37 +1,40 @@
 <template>
-  <div>
-    <v-dialog :value="open" persistent max-width="400">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Set Kode Sampel Lab</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="lab_code_sample"
-                  label="Kode Sampel Lab"
-                  outlined
-                />
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="blue darken-1" text @click="close">
-            Batal
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="save">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+  <v-dialog :value="open" persistent max-width="400">
+    <validation-observer
+      ref="codeLabResult"
+      v-slot="{ handleSubmit }"
+      tag="div"
+    >
+      <v-form @submit.prevent="handleSubmit(save)">
+        <v-card class="text-center">
+          <v-card-title>
+            <span class="col">Set Kode Sampel Lab</span>
+          </v-card-title>
+          <v-card-text class="pb-0">
+            <pkbr-input
+              v-model="lab_code_sample"
+              label="Kode Sampel Lab"
+              name="Kode Sampel Lab"
+              rules="required"
+            />
+          </v-card-text>
+          <v-card-actions class="pb-6 justify-center">
+            <v-btn
+              color="grey darken-1"
+              outlined
+              class="mr-2 px-2"
+              @click="close"
+            >
+              Batal
+            </v-btn>
+            <v-btn color="primary" class="ml-2 px-2" type="submit">
+              Simpan
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </validation-observer>
+  </v-dialog>
 </template>
 
 <script>
@@ -40,11 +43,6 @@ export default {
     open: {
       type: Boolean,
       default: false
-    },
-
-    eventId: {
-      type: Number,
-      default: null
     },
 
     recordId: {
@@ -59,25 +57,21 @@ export default {
     }
   },
 
-  methods: {
-    async save() {
-      const eventId = this.eventId
-
-      try {
-        await this.$axios.$put(
-          `/rdt/events/${eventId}/participants-set-labcode`,
-          {
-            rdt_invitation_id: this.recordId,
-            lab_code_sample: this.lab_code_sample
-          }
-        )
-
+  watch: {
+    open(val) {
+      if (!val) {
         this.lab_code_sample = null
-
-        this.$emit('save')
-      } catch (e) {
-        //
+        this.$refs.codeLabResult.reset()
       }
+    }
+  },
+
+  methods: {
+    save() {
+      this.$emit('save', {
+        rdt_invitation_id: this.recordId,
+        lab_code_sample: this.lab_code_sample
+      })
     },
 
     close() {

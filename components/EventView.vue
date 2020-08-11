@@ -130,28 +130,16 @@ export default {
       this.event_location = val ? val.event_location : null
       this.city = val ? val.city : null
       this.start_at = val
-        ? this.$dateFns.format(
-            new Date(val.start_at.split('.')[0]),
-            'dd-MM-yyyy HH:mm'
-          )
+        ? this.$dateFns.format(new Date(val.start_at), 'dd-MM-yyyy HH:mm')
         : null
       this.end_at = val
-        ? this.$dateFns.format(
-            new Date(val.end_at.split('.')[0]),
-            'dd-MM-yyyy HH:mm'
-          )
+        ? this.$dateFns.format(new Date(val.end_at), 'dd-MM-yyyy HH:mm')
         : null
       this.invitations_count = val ? val.invitations_count : null
       this.kloter = val.schedules.map((sch) => ({
         ...sch,
-        start_at: this.$dateFns.format(
-          new Date(sch.start_at.split('.')[0]),
-          'HH:mm'
-        ),
-        end_at: this.$dateFns.format(
-          new Date(sch.end_at.split('.')[0]),
-          'HH:mm'
-        )
+        start_at: this.$dateFns.format(new Date(sch.start_at), 'HH:mm'),
+        end_at: this.$dateFns.format(new Date(sch.end_at), 'HH:mm')
       }))
     }
   }

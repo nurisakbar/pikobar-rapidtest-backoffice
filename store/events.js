@@ -136,14 +136,14 @@ export const actions = {
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
-      const { sortBy, sortOrder, status, keyWords } = filter
+      const { sortBy, sortDesc, status, keyWords } = filter
       const query = mapKeys(
         {
           page,
           perPage: itemsPerPage,
           search: keyWords,
           sortBy: sortBy[0] || null,
-          sortOrder: sortOrder[0] ? 'desc' : 'asc',
+          sortOrder: sortDesc[0] ? 'desc' : 'asc',
           status
         },
         (value, key) => snakeCase(key)

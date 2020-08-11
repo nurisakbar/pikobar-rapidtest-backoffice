@@ -1,7 +1,8 @@
+/* eslint-disable vue/valid-v-bind */
 <template>
   <div style="width: 100%;">
     <v-data-table
-      class="v-card v-sheet pkbr-table"
+      class="v-card v-sheet pkbr-table sticky-last"
       :headers="headers"
       :items="records"
       :server-items-length="totalItems"
@@ -14,19 +15,6 @@
     >
       <template slot="top">
         <div class="d-flex">
-          <v-col cols="12">
-            Status:
-            <v-btn-toggle v-model="stat" color="primary" class="pl-2">
-              <v-btn small value="draft">
-                DRAFT
-              </v-btn>
-              <v-btn small value="published">
-                PUBLISHED
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
-        </div>
-        <div class="d-flex">
           <v-col cols="auto">
             <v-text-field
               v-model="searchKey"
@@ -34,6 +22,19 @@
               clearable
               outlined
               dense
+              hide-details
+            />
+          </v-col>
+          <v-col cols="auto">
+            <pkbr-select
+              v-model="stat"
+              :items="[
+                { text: 'Semua', value: null },
+                { text: 'Draft', value: 'draft' },
+                { text: 'Published', value: 'published' }
+              ]"
+              label="Status"
+              name="Status"
               hide-details
             />
           </v-col>
@@ -48,18 +49,18 @@
           </v-col>
         </div>
       </template>
-      <template v-slot:item.start_at="{ value }">
+      <template v-slot:[`item.tanggal`]="{ item }">
+        {{ formatTanggal(item.start_at, item.end_at) }}
+      </template>
+      <template v-slot:[`item.end_at`]="{ value }">
         {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
       </template>
-      <template v-slot:item.end_at="{ value }">
-        {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
-      </template>
-      <template v-slot:item.status="{ value }">
-        <v-chip small class="ma-2" :color="value | getChipColor">
+      <template v-slot:[`item.status`]="{ value }">
+        <v-chip small class="ma-0" :color="value | getChipColor">
           {{ value }}
         </v-chip>
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon
           v-if="allow.includes('view-events')"
           class="mr-2"
@@ -126,13 +127,12 @@ import { getChipColor } from '@/utilities/formater'
 
 const headers = [
   { text: 'Nama Kegiatan', value: 'event_name', sortable: false, width: 150 },
-  { text: 'Tanggal Mulai', value: 'start_at', width: 180 },
-  { text: 'Tanggal Selesai', value: 'end_at', width: 180 },
+  { text: 'Tanggal', value: 'tanggal', width: 150 },
   { text: 'Lokasi', value: 'event_location', width: 200 },
   { text: 'Kota/Kab', value: 'city.name', width: 200 },
   { text: 'Peserta', value: 'invitations_count', width: 100 },
+  { text: 'Status', value: 'status' },
   { text: 'Kloter', value: 'schedules_count', width: 100 },
-  { text: 'Status', value: 'status', width: 200 },
   { text: 'Actions', value: 'actions', sortable: false, width: 150 }
 ]
 
@@ -190,7 +190,8 @@ export default {
         await this.$store.dispatch('events/resetOptions')
         this.options = {
           ...this.options,
-          status: typeof value === 'object' ? value[0] : value
+          keyWords: this.searchKey,
+          status: value
         }
       },
       get() {
@@ -202,6 +203,7 @@ export default {
         await this.$store.dispatch('events/resetOptions')
         this.options = {
           ...this.options,
+          status: this.stat,
           keyWords: value
         }
       },
@@ -212,9 +214,9 @@ export default {
   },
 
   watch: {
-    async options(value, oldValue) {
+    options(value, oldValue) {
       if (!isEqual(oldValue, value)) {
-        await this.$emit('optionChanged', value)
+        this.$emit('optionChanged', value)
       }
     }
   },
@@ -236,12 +238,28 @@ export default {
     if (this.$route.query.keyWords) {
       options.keyWords = this.$route.query.keyWords
     }
-    options.status = this.$route.query.status || 'published'
+    if (this.$route.query.status) {
+      options.status = this.$route.query.status
+    }
     this.options = options
     this.$emit('optionChanged', options)
   },
 
   methods: {
+    formatTanggal(startTanggal, endTanggal) {
+      const start = this.$dateFns.format(new Date(startTanggal), 'dd MMM yyyy')
+      const end = this.$dateFns.format(new Date(endTanggal), 'dd MMM yyyy')
+      const [startDate, startMonth, startYear] = start.split(' ')
+      const [endDate, endMonth, endYear] = end.split(' ')
+      if (start === end) {
+        return start
+      } else if (startMonth === endMonth && startYear === endYear) {
+        return `${startDate} - ${endDate} ${startMonth} ${startYear}`
+      } else if (startMonth !== endMonth && startYear === endYear) {
+        return `${startDate} ${startMonth} - ${endDate} ${endMonth} ${startYear}`
+      }
+      return `${start} - ${end}`
+    },
     selectToRemove(payload) {
       this.selectedEvent = payload
       this.deleteModal = true

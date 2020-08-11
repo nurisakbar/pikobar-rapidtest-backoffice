@@ -1,7 +1,10 @@
 /* eslint-disable camelcase */
 
-import { mapKeys, camelCase, snakeCase } from 'lodash'
+import { mapKeys, camelCase, snakeCase, debounce } from 'lodash'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '@/utilities/constant'
+
+const defaultFilter = { ...DEFAULT_FILTER }
+delete defaultFilter.status
 
 export const state = () => ({
   loading: false,
@@ -10,7 +13,7 @@ export const state = () => ({
   dataParticipants: [],
   current: null,
   pagination: { ...DEFAULT_PAGINATION },
-  filter: { ...DEFAULT_FILTER }
+  filter: { ...defaultFilter }
 })
 
 export const mutations = {
@@ -40,7 +43,7 @@ export const mutations = {
   },
   RESET_FILTER(state) {
     const s = state
-    s.filter = DEFAULT_FILTER
+    s.filter = defaultFilter
   },
   SET_TABLE_OPTIONS(state, payload) {
     const s = state
@@ -51,8 +54,7 @@ export const mutations = {
       mustSort: payload.mustSort,
       sortBy: payload.sortBy,
       sortDesc: payload.sortDesc,
-      sortOrder: payload.sortOrder,
-      status: payload.status
+      sortOrder: payload.sortOrder
     }
     s.pagination = {
       itemsPerPage: payload.itemsPerPage - 0,
@@ -103,63 +105,47 @@ export const getters = {
 }
 
 export const actions = {
-  async getListParticipants({ commit }, id) {
-    commit('SET_LOADING', true)
-    try {
-      const { pagination, filter } = state
-      const { page, itemsPerPage } = pagination
-      const { search, sortBy, sortOrder, status } = filter
-      const query = mapKeys(
-        {
-          page,
-          perPage: itemsPerPage,
-          search,
-          sortBy: sortBy[0] || null,
-          sortOrder: sortOrder[0] ? 'desc' : 'asc',
-          status
-        },
-        (value, key) => snakeCase(key)
-      )
-      const { data, meta } = await this.$axios.$get(
-        `/rdt/events/${id}/participants`,
-        {
-          query,
-          progress: false
-        }
-      )
-      commit('SET_DATA_PARTICIPANTS', data)
-      const tablePagination = mapKeys(
-        {
-          itemsPerPage: parseInt(meta.per_page),
-          ...meta
-        },
-        (value, key) => camelCase(key)
-      )
-      commit('SET_PAGINATION', {
-        page: tablePagination.currentPage,
-        ...tablePagination
-      })
-    } catch (e) {
-      //
-    } finally {
-      commit('SET_LOADING', false)
+  resetOptions({ commit }) {
+    commit('RESET_PAGINATION')
+    commit('RESET_FILTER')
+  },
+
+  resetPagination({ commit }) {
+    commit('RESET_PAGINATION')
+  },
+
+  resetFilter({ commit }) {
+    commit('RESET_FILTER')
+  },
+
+  async getRecords({ commit, dispatch, state }, debounced) {
+    if (debounced) {
+      if (!state.loading) commit('SET_LOADING', true)
+      await dispatch('getListDebounced')
+    } else {
+      await dispatch('getList')
     }
   },
+
+  getListDebounced: debounce(
+    ({ dispatch }, status) => dispatch('getList', status),
+    500
+  ),
+
   async getList({ commit, state }, eventId) {
     commit('SET_LOADING', true)
 
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
-      const { search, sortBy, sortOrder, status } = filter
+      const { search, sortBy, sortOrder } = filter
       const query = mapKeys(
         {
           page,
           perPage: itemsPerPage,
           search,
           sortBy: sortBy[0] || null,
-          sortOrder: sortOrder[0] ? 'desc' : 'asc',
-          status
+          sortOrder: sortOrder[0] ? 'desc' : 'asc'
         },
         (value, key) => snakeCase(key)
       )
@@ -189,19 +175,6 @@ export const actions = {
     }
   },
 
-  async getCurrent({ commit, state }, idEvent) {
-    commit('SET_LOADING', true)
-
-    try {
-      const { data } = await this.$axios.$get(`/rdt/events/${idEvent}`)
-      commit('SET_CURRENT', data)
-    } catch (e) {
-      //
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-
   async importPeserta({ commit }, { idEvent, formData }) {
     commit('SET_LOADING_IMPORT', true)
     try {
@@ -215,14 +188,4 @@ export const actions = {
       commit('SET_LOADING_IMPORT', false)
     }
   }
-  // async edit({ commit, state }, payload) {
-  //   commit('SET_LOADING', true)
-  //   try {
-  //     await this.$axios.$put(`/rdt/events/${state.current.id}`, payload)
-  //   } catch (error) {
-  //     throw new Error(error)
-  //   } finally {
-  //     commit('SET_LOADING', false)
-  //   }
-  // }
 }

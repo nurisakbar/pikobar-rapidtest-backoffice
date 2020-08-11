@@ -85,13 +85,9 @@
       v-model="applicants"
       title="Daftar Calon Peserta RDT"
       class="mt-4"
-      status="new"
-      :page="page"
-      :per-page="perPage"
-      :sort-by="sortBy"
-      :sort-order="sortOrder"
-      no-action
+      no-actions
       show-select
+      @optionChanged="onOptionChange"
     />
     <v-dialog v-model="importModal" max-width="528">
       <validation-observer
@@ -211,6 +207,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { pickBy, identity } from 'lodash'
 import {
   SUCCESS_IMPORT,
   FAILED_IMPORT,
@@ -218,7 +215,7 @@ import {
   FAILED_ADD_PARTICIPANTS,
   EVENT_BLAST_EMPTY
 } from '@/utilities/constant'
-import ApplicantsDatatable from '@/components/ApplicantsDatatableClient'
+import ApplicantsDatatable from '@/components/ApplicantsDatatable'
 
 export default {
   middleware: 'auth',
@@ -246,6 +243,15 @@ export default {
   },
 
   watch: {
+    '$route.query': {
+      handler(value, oldValue) {
+        this.$store.dispatch(
+          'applicants/getRecords',
+          value.keyWords !== oldValue.keyWords || value.page !== oldValue.page
+        )
+      },
+      deep: true
+    },
     addModal(show) {
       if (!show) this.$refs.observerKloter.reset()
     },
@@ -274,21 +280,6 @@ export default {
   },
 
   mounted() {
-    if (this.$route.query.page) {
-      this.page = parseInt(this.$route.query.page)
-    }
-
-    if (this.$route.query.per_page) {
-      this.perPage = parseInt(this.$route.query.per_page)
-    }
-
-    if (this.$route.query.sort_by) {
-      this.sortBy = this.$route.query.sort_by
-    }
-
-    if (this.$route.query.sort_order) {
-      this.sortOrder = this.$route.query.sort_order
-    }
     if (this.$route.params.eventId) {
       this.$store.dispatch('events/getCurrent', this.$route.params.eventId)
     } else {
@@ -297,6 +288,22 @@ export default {
   },
 
   methods: {
+    onOptionChange(value) {
+      let query = { ...this.$route.query }
+      if (value.page) query.page = value.page
+      query.perPage = value.itemsPerPage || null
+      query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
+      query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
+      query.city = value.city
+      query.keyWords = value.keyWords
+      query.sessionId = value.sessionId
+      query = pickBy(query, identity)
+      this.$router
+        .replace({
+          query
+        })
+        .catch(() => {})
+    },
     async addApplicants() {
       try {
         if (this.applicants.length === 0) {

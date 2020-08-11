@@ -19,24 +19,20 @@
       </v-list>
       <v-divider></v-divider>
       <v-list nav dense :class="!miniVariant && 'px-0'" class="pikobar-nav">
-        <v-list-item-group v-model="activeItem" color="primary">
-          <nuxt-link v-for="(item, i) in menuItems" :key="i" :to="item.to">
-            <v-list-item
-              v-if="permissions.includes(item.permission)"
-              :value="item.to"
-              dense
-              nuxt
-              active-class="nav__active"
-              :disabled="activeItem === item.to"
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title" />
-              </v-list-item-content>
-            </v-list-item>
-          </nuxt-link>
+        <v-list-item-group color="primary">
+          <v-list-item
+            v-for="(item, i) in menuItems"
+            :key="i"
+            dense
+            :to="item.to"
+          >
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title" />
+            </v-list-item-content>
+          </v-list-item>
         </v-list-item-group>
       </v-list>
       <template v-slot:append>
@@ -52,7 +48,7 @@
         </v-list-item>
       </template>
     </v-navigation-drawer>
-    <v-app-bar app dark class="bg-navbar">
+    <v-app-bar app dark fixed top dense class="bg-navbar">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn icon @click.stop="miniVariant = !miniVariant">
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
@@ -128,13 +124,13 @@ export default {
         {
           icon: 'mdi-account-group',
           title: 'Calon Peserta',
-          to: '/applicants',
+          to: '/candidates',
           permission: 'list-applicants'
         },
         {
           icon: 'mdi-card-account-details-star',
           title: 'Daftar Peserta',
-          to: '/applicants/approved',
+          to: '/participants',
           permission: 'list-applicants'
         },
         {
@@ -163,7 +159,14 @@ export default {
     ...mapGetters('breadcrumbs', ['getItems'])
   },
 
+  watch: {
+    '$route.path'(val) {
+      this.activeItem = val
+    }
+  },
+
   async created() {
+    this.activeItem = this.$route.path
     await this.$store.dispatch('area/getKabkot')
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === 'toast/show') {

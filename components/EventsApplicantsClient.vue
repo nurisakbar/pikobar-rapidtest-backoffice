@@ -94,10 +94,7 @@
           </v-layout>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon class="mr-2" @click="$router.push(`events/${item.id}/edit`)">
-            mdi-card-search
-          </v-icon>
-          <v-icon class="mr-2">
+          <v-icon class="mr-2" @click="modalEditLabCodeOpen(item)">
             mdi-pencil
           </v-icon>
         </template>
@@ -188,11 +185,21 @@
         </form>
       </validation-observer>
     </v-dialog>
+
+    <event-applicant-edit-lab-code-dialog
+      :open="modalEditLabCode"
+      :record-id="modalEditLabCodeId"
+      :event-id="idEvent"
+      @close="modalEditLabCodeClose"
+      @save="modalEditLabCodeSave"
+    />
   </div>
 </template>
 
 <script>
 import { getChipColor } from '@/utilities/formater'
+import EventApplicantEditLabCodeDialog from '@/components/EventApplicantEditLabCodeDialog'
+
 import {
   EVENT_BLAST_EMPTY,
   EVENT_BLAST_SUCCESS,
@@ -223,6 +230,10 @@ export default {
     getChipColor
   },
 
+  components: {
+    EventApplicantEditLabCodeDialog
+  },
+
   props: {
     idEvent: {
       type: Number,
@@ -238,7 +249,9 @@ export default {
       blastNotifModal: false,
       ImportModalTest: false,
       modalType: 'Undangan',
-      importFile: null
+      importFile: null,
+      modalEditLabCode: false,
+      modalEditLabCodeId: null
     }
   },
 
@@ -333,6 +346,25 @@ export default {
           })
         }
       }
+    },
+
+    modalEditLabCodeOpen(item) {
+      this.modalEditLabCodeId = item.id
+      this.modalEditLabCode = true
+    },
+
+    modalEditLabCodeClose() {
+      this.modalEditLabCodeId = null
+      this.modalEditLabCode = false
+    },
+
+    modalEditLabCodeSave() {
+      this.modalEditLabCodeClose()
+
+      this.$store.dispatch(
+        'eventParticipants/getList',
+        this.$route.params.eventId
+      )
     }
   }
 }

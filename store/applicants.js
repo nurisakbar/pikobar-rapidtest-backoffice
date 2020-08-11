@@ -1,16 +1,22 @@
 /* eslint-disable camelcase */
 
-import { mapKeys, snakeCase, debounce } from 'lodash'
+import { mapKeys, camelCase, snakeCase, debounce } from 'lodash'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '@/utilities/constant'
 
-export const state = () => ({
-  loading: false,
-  data: [],
-  current: null,
-  pagination: { ...DEFAULT_PAGINATION },
-  filter: { ...DEFAULT_FILTER }
-})
+const defaultFilter = { ...DEFAULT_FILTER }
+delete defaultFilter.status
 
+export const state = () => {
+  return {
+    loading: false,
+    loadingImport: false,
+    data: [],
+    dataParticipants: [],
+    current: null,
+    pagination: { ...DEFAULT_PAGINATION },
+    filter: defaultFilter
+  }
+}
 export const mutations = {
   SET_LOADING(state, payload) {
     const s = state
@@ -30,7 +36,7 @@ export const mutations = {
   },
   RESET_PAGINATION(state) {
     const s = state
-    s.pagination = { ...s.pagination, ...DEFAULT_PAGINATION }
+    s.pagination = DEFAULT_PAGINATION
   },
   SET_FILTER(state, payload) {
     const s = state
@@ -38,7 +44,7 @@ export const mutations = {
   },
   RESET_FILTER(state) {
     const s = state
-    s.filter = { ...s.filter, ...DEFAULT_FILTER }
+    s.filter = defaultFilter
   },
   SET_TABLE_OPTIONS(state, payload) {
     const s = state
@@ -50,14 +56,20 @@ export const mutations = {
       sortBy: payload.sortBy,
       sortDesc: payload.sortDesc,
       sortOrder: payload.sortOrder,
-      status: payload.status,
-      keyWords: payload.keyWords
+      city: payload.city,
+      keyWords: payload.keyWords,
+      sessionId: payload.sessionId
     }
     s.pagination = {
       itemsPerPage: payload.itemsPerPage - 0,
       page: payload.page,
+      perPage: payload.perPage,
       total: payload.total
     }
+  },
+  SET_LOADING_IMPORT(state, payload) {
+    const s = state
+    s.loadingImport = payload
   }
 }
 
@@ -89,6 +101,10 @@ export const getters = {
   getTotalData(state) {
     const s = state
     return s.pagination.total
+  },
+  getLoadingImport() {
+    const s = state
+    return s.loadingImport
   }
 }
 
@@ -106,19 +122,6 @@ export const actions = {
     commit('RESET_FILTER')
   },
 
-  async addAplicants({ commit }, { idEvent, applicants }) {
-    commit('SET_LOADING', true)
-    try {
-      await this.$axios.$post(`/rdt/events/${idEvent}/participants`, {
-        applicants
-      })
-    } catch (error) {
-      throw new Error(error.response.data.message)
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-
   async getRecords({ commit, dispatch, state }, debounced) {
     if (debounced) {
       if (!state.loading) commit('SET_LOADING', true)
@@ -128,82 +131,68 @@ export const actions = {
     }
   },
 
-  getListDebounced: debounce(({ dispatch }) => dispatch('getList'), 500),
+  async getRecordsNew({ commit, dispatch, state }, debounced) {
+    const status = 'new'
+    if (debounced) {
+      if (!state.loading) commit('SET_LOADING', true)
+      await dispatch('getListDebounced', status)
+    } else {
+      await dispatch('getList', status)
+    }
+  },
 
-  async getList({ commit, state }) {
+  async getRecordsApproved({ commit, dispatch, state }, debounced) {
+    const status = 'approved'
+    if (debounced) {
+      if (!state.loading) commit('SET_LOADING', true)
+      await dispatch('getListDebounced', status)
+    } else {
+      await dispatch('getList', status)
+    }
+  },
+
+  getListDebounced: debounce(
+    ({ dispatch }, status) => dispatch('getList', status),
+    500
+  ),
+
+  async getList({ commit, state }, status) {
     commit('SET_LOADING', true)
-
     try {
       const { pagination, filter } = state
       const { page, itemsPerPage } = pagination
-      const { sortBy, sortDesc, status, keyWords } = filter
+      const { keyWords, sortBy, sortOrder, city, sessionId } = filter
       const query = mapKeys(
         {
           page,
           perPage: itemsPerPage,
           search: keyWords,
           sortBy: sortBy[0] || null,
-          sortOrder: sortDesc[0] ? 'desc' : 'asc',
-          status
+          sortOrder: sortOrder[0] ? 'desc' : 'asc',
+          status,
+          cityCode: city,
+          sessionId
         },
         (value, key) => snakeCase(key)
       )
-      const { data, meta } = await this.$axios.$get('/rdt/events', {
+      const { data, meta } = await this.$axios.$get('/rdt/applicants', {
         params: query,
         progress: false
       })
+      const tablePagination = mapKeys(
+        {
+          itemsPerPage: parseInt(meta.per_page),
+          ...meta
+        },
+        (value, key) => camelCase(key)
+      )
       commit('SET_DATA', data)
       commit('SET_PAGINATION', {
-        page: parseInt(meta.current_page),
-        itemsPerPage: parseInt(meta.per_page),
-        total: parseInt(meta.total)
+        page: tablePagination.currentPage,
+        ...tablePagination
       })
     } catch (e) {
       //
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-
-  async getCurrent({ commit, state }, idEvent) {
-    commit('SET_LOADING', true)
-
-    try {
-      const { data } = await this.$axios.$get(`/rdt/events/${idEvent}`)
-      commit('SET_CURRENT', data)
-    } catch (e) {
-      //
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-  async create({ commit }, payload) {
-    commit('SET_LOADING', true)
-    try {
-      const res = await this.$axios.$post('/rdt/events', payload)
-      return res
-    } catch (error) {
-      throw new Error(error)
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-  async edit({ commit, state }, payload) {
-    commit('SET_LOADING', true)
-    try {
-      await this.$axios.$put(`/rdt/events/${state.current.id}`, payload)
-    } catch (error) {
-      throw new Error(error)
-    } finally {
-      commit('SET_LOADING', false)
-    }
-  },
-  async delete({ commit, state }, id) {
-    commit('SET_LOADING', true)
-    try {
-      await this.$axios.$delete(`/rdt/events/${id}`)
-    } catch (error) {
-      throw new Error(error)
     } finally {
       commit('SET_LOADING', false)
     }

@@ -41,12 +41,12 @@
         :custom-filter="doFilter"
         :search="filterData"
       >
-        <template v-slot:item.invitations="{ item }">
+        <template v-slot:[`item.invitations`]="{ item }">
           <v-layout justify-start>
             {{ getLatestInvitation(item.invitations) }}
           </v-layout>
         </template>
-        <template v-slot:item.gender="{ item }">
+        <template v-slot:[`item.gender`]="{ item }">
           <v-layout justify-start>
             <template v-if="item.gender === 'F'">
               Perempuan
@@ -56,7 +56,7 @@
             </template>
           </v-layout>
         </template>
-        <template v-slot:item.symptoms_interaction="{ item }">
+        <template v-slot:[`item.symptoms_interaction`]="{ item }">
           <v-layout justify-center>
             <template v-if="item.symptoms_interaction === 0">
               Ya
@@ -69,24 +69,24 @@
             </template>
           </v-layout>
         </template>
-        <template v-slot:item.person_status="{ item }">
+        <template v-slot:[`item.person_status`]="{ item }">
           <v-layout justify-start>
             {{ getPersonStatusText(item.person_status) }}
           </v-layout>
         </template>
-        <template v-slot:item.age="{ item }">
+        <template v-slot:[`item.age`]="{ item }">
           <v-layout justify-end>
             {{ item.age }}
           </v-layout>
         </template>
-        <template v-slot:item.created_at="{ item }">
+        <template v-slot:[`item.created_at`]="{ item }">
           <v-layout>
             {{
               $dateFns.format(new Date(item.created_at), 'dd MMMM yyyy HH:mm')
             }}
           </v-layout>
         </template>
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:[`item.actions`]="{ item }">
           <v-icon v-if="allowView" class="mr-2" @click="viewItem(item)">
             mdi-card-search
           </v-icon>
@@ -216,7 +216,7 @@ export default {
       editRecordId: null,
       viewDialog: false,
       viewRecordId: null,
-      headers: !this.noActions
+      headers: this.noActions
         ? headers.filter((head) => head.value !== 'actions')
         : headers,
       records: [],
@@ -318,10 +318,8 @@ export default {
         if (latestInvitation.event) {
           return latestInvitation.event.event_name
         }
-
         return 'Pernah'
       }
-
       return 'Belum Pernah'
     },
 
@@ -329,19 +327,15 @@ export default {
       if (value === 'ODP') {
         return 'ODP'
       }
-
       if (value === 'PDP') {
         return 'PDP'
       }
-
       if (value === 'OTG') {
         return 'OTG'
       }
-
       if (value === 'NOT_ALL') {
         return 'Bukan Ketiganya'
       }
-
       if (value === 'UNKNOWN') {
         return 'Tidak Tahu'
       }

@@ -1,77 +1,209 @@
 <template>
   <div style="width: 100%;">
-    <v-row>
-      <v-col cols="12" class="d-flex align-center pb-0">
-        <h3>Daftar Peserta</h3>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" :to="`/events/${$route.params.eventId}/add`">
-          <v-icon class="mr-1">mdi-plus-circle</v-icon>
-          Tambah Peserta
-        </v-btn>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn color="primary" to="/events/create">
-          <v-icon class="mr-1">mdi-email-send</v-icon>
-          Kirim Undangan
-        </v-btn>
-        <v-btn color="success" to="/events/create">
-          <v-icon class="mr-1">mdi-email-send</v-icon>
-          Kirim Hasil Test
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="auto">
-        <v-btn outlined color="primary">
-          CSV
-        </v-btn>
-        <v-btn outlined color="primary">
-          PDF
-        </v-btn>
-        <v-btn color="success" to="/events/create">
-          <v-icon class="mr-1">mdi-printer</v-icon>
-          Print
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-card>
-      <v-data-table
-        v-model="pesertaSelected"
-        :headers="headers"
-        :items.sync="records"
-        :loading="loading"
-        show-select
-        item-key="rdt_applicant_id"
+    <v-data-table
+      v-model="pesertaSelected"
+      class="v-card v-sheet rounded-t-0 pkbr-table sticky-last"
+      :headers="headers"
+      :server-items-length="totalItems"
+      :items="records"
+      :loading="loading"
+      :options.sync="options"
+      fixed-header
+      show-select
+      item-key="rdt_applicant_id"
+      :header-props="{
+        class: 'blue-grey lighten-3'
+      }"
+    >
+      <template slot="top">
+        <div class="d-flex flex-wrap">
+          <v-col cols="12" class="d-flex align-center pb-0">
+            <h3>Daftar Peserta</h3>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" :to="`/events/${$route.params.eventId}/add`">
+              <v-icon class="mr-1">mdi-plus-circle</v-icon>
+              Tambah Peserta
+            </v-btn>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="primary" @click="openModalNotif('Undangan')">
+              <v-icon class="mr-1">mdi-email-send</v-icon>
+              Kirim Undangan
+            </v-btn>
+            <v-btn color="success" @click="openModalNotif('Hasil Test')">
+              <v-icon class="mr-1">mdi-file-send-outline</v-icon>
+              Kirim Hasil Test
+            </v-btn>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto">
+            <v-btn color="success" @click="openModalImportHasil">
+              <v-icon class="mr-1">mdi-file-import-outline</v-icon>
+              Import Hasil Test
+            </v-btn>
+            <v-menu bottom offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn class="pr-1" v-bind="attrs" color="error" v-on="on">
+                  Export
+                  <v-icon class="ml-1">mdi-menu-down</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, i) in [
+                    { icon: 'table', text: 'CSV' },
+                    { icon: 'pdf-box', text: 'PDF' },
+                    { icon: 'printer', text: 'PRINT' }
+                  ]"
+                  :key="i"
+                  @click="() => {}"
+                >
+                  <v-list-item-title>
+                    <v-icon class="mr-1">mdi-{{ item.icon }}</v-icon>
+                    {{ item.text }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
+        </div>
+      </template>
+      <template v-slot:[`item.notified_at`]="{ value }">
+        {{ !!value ? 'Terkirim' : 'Belum Terkirim' }}
+      </template>
+      <template v-slot:[`item.attended_at`]="{ value }">
+        {{
+          !!value
+            ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm')
+            : 'Tidak Hadir'
+        }}
+      </template>
+      <template v-slot:[`item.lab_result_type`]="{ value }">
+        {{ value }}
+      </template>
+      <template v-slot:[`item.applicant.status`]="{ value }">
+        <v-chip small class="ma-2" :color="value | getChipColor">
+          {{ value }}
+        </v-chip>
+      </template>
+      <template v-slot:[`item.applicant.gender`]="{ item }">
+        <v-layout justify-start>
+          <template v-if="item.applicant.gender === '1'">
+            Laki-Laki
+          </template>
+          <template v-if="item.applicant.gender === '0'">
+            Perempuan
+          </template>
+        </v-layout>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon class="mr-2" @click="$router.push(`events/${item.id}/edit`)">
+          mdi-card-search
+        </v-icon>
+        <v-icon class="mr-2">
+          mdi-pencil
+        </v-icon>
+      </template>
+    </v-data-table>
+    <v-dialog v-model="blastNotifModal" max-width="528">
+      <v-card class="text-center">
+        <v-card-title>
+          <span class="col pl-10">Kirim {{ modalType }}</span>
+          <v-btn icon @click="blastNotifModal = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <div>
+            Apakah anda akan mengirimkan notifikasi {{ modalType }} kepada
+          </div>
+          <strong>Peserta Terpilih</strong> atau <strong>Semua Peserta</strong>.
+        </v-card-text>
+        <v-card-actions class="pb-6 justify-center">
+          <v-btn
+            color="grey darken-1"
+            outlined
+            class="mr-2 px-2"
+            @click="blastNotify"
+          >
+            Semua
+          </v-btn>
+          <v-btn
+            color="primary"
+            class="ml-2 px-2"
+            @click="
+              blastNotify(
+                pesertaSelected,
+                `send${modalType.split(' ').join('')}`
+              )
+            "
+          >
+            Terpilih
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="ImportModalTest" max-width="528">
+      <validation-observer
+        v-slot="{ valid, handleSubmit }"
+        ref="observerImport"
+        tag="div"
       >
-        <template v-slot:item.applicant.status="{ value }">
-          <v-chip small class="ma-2" :color="value | getChipColor">
-            {{ value }}
-          </v-chip>
-        </template>
-        <template v-slot:item.applicant.gender="{ item }">
-          <v-layout justify-start>
-            <template v-if="item.applicant.gender === '1'">
-              Laki-Laki
-            </template>
-            <template v-if="item.applicant.gender === '0'">
-              Perempuan
-            </template>
-          </v-layout>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-icon class="mr-2" @click="$router.push(`events/${item.id}/edit`)">
-            mdi-card-search
-          </v-icon>
-          <v-icon class="mr-2">
-            mdi-pencil
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-card>
+        <form ref="importForm" @submit.prevent="handleSubmit(doImport)">
+          <v-card class="text-center">
+            <v-card-title>
+              <span class="col">Import Hasil Test</span>
+            </v-card-title>
+            <v-card-text class="pb-0">
+              <div>
+                Untuk Import data hasil test, anda harus memakai format Excel
+                (.xls).
+              </div>
+              <pkbr-input
+                v-model="importFile"
+                label="Import Hasil Test"
+                type="file"
+                class="mt-4"
+                name="file"
+                rules="required"
+              />
+            </v-card-text>
+            <v-card-actions class="pb-6 justify-center">
+              <v-btn
+                color="grey darken-1"
+                outlined
+                class="mr-2 px-2"
+                @click="ImportModalTest = false"
+              >
+                Batal
+              </v-btn>
+              <v-btn
+                color="primary"
+                :disabled="!valid"
+                class="ml-2 px-2"
+                type="submit"
+              >
+                Upload
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </form>
+      </validation-observer>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import { isEqual } from 'lodash'
 import { getChipColor } from '@/utilities/formater'
+import {
+  EVENT_BLAST_EMPTY,
+  EVENT_BLAST_SUCCESS,
+  EVENT_PARTICIPANTS_EMPTY,
+  SUCCESS_IMPORT,
+  FAILED_IMPORT
+} from '@/utilities/constant'
+
 const headers = [
   {
     text: 'Kode',
@@ -80,9 +212,12 @@ const headers = [
     width: 150
   },
   { text: 'Nama Lengkap', value: 'applicant.name', width: 180 },
-  { text: 'Kloter', value: 'rdt_event_schedule_id', width: 100 },
-  { text: 'Jenis Kelamin', value: 'applicant.gender', width: 200 },
-  { text: 'Usia', value: 'applicant.age', width: 100 },
+  { text: 'Kloter', value: 'rdt_event_schedule_id', width: 85 },
+  { text: 'Jenis Kelamin', value: 'applicant.gender', width: 140 },
+  { text: 'Usia', value: 'applicant.age', width: 85 },
+  { text: 'Terkirim', value: 'notified_at', sortable: false, width: 150 },
+  { text: 'Kehadiran', value: 'attended_at', sortable: false, width: 150 },
+  { text: 'Hasil Test', value: 'lab_result_type', sortable: false, width: 150 },
   { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
   { text: 'Actions', value: 'actions', sortable: false, width: 100 }
 ]
@@ -92,10 +227,21 @@ export default {
     getChipColor
   },
 
+  props: {
+    idEvent: {
+      type: [Number, String],
+      default: null
+    }
+  },
+
   data() {
     return {
       headers,
-      pesertaSelected: []
+      pesertaSelected: [],
+      blastNotifModal: false,
+      ImportModalTest: false,
+      modalType: 'Undangan',
+      importFile: null
     }
   },
 
@@ -120,8 +266,10 @@ export default {
   },
 
   watch: {
-    options(value) {
-      this.$emit('optionChanged', value)
+    options(value, oldValue) {
+      if (!isEqual(oldValue, value)) {
+        this.$emit('optionChanged', value)
+      }
     }
   },
 
@@ -131,7 +279,7 @@ export default {
       options.page = parseInt(this.$route.query.page)
     }
     if (this.$route.query.perPage) {
-      options.itemsPerPage = parseInt(this.$route.query.perPage)
+      options.perPage = parseInt(this.$route.query.perPage)
     }
     if (this.$route.query.sortBy) {
       options.sortBy = [this.$route.query.sortBy]
@@ -139,7 +287,91 @@ export default {
     if (this.$route.query.sortOrder) {
       options.sortOrder = [this.$route.query.sortOrder]
     }
+    if (this.$route.query.keyWords) {
+      options.keyWords = this.$route.query.keyWords
+    }
+    if (this.$route.query.status) {
+      options.status = this.$route.query.status
+    }
     this.options = options
+    this.$emit('optionChanged', options)
+  },
+
+  methods: {
+    openModalNotif(type) {
+      this.modalType = type || this.modalType
+      this.blastNotifModal = true
+    },
+    openModalImportHasil() {
+      this.ImportModalTest = true
+    },
+    doImport() {
+      const formData = new FormData()
+      formData.append('file', this.importFile)
+      try {
+        // await this.$store.dispatch('eventParticipants/importPeserta', {
+        //   idEvent: this.getCurrent.id,
+        //   formData
+        // })
+        this.$toast.show({
+          message: SUCCESS_IMPORT,
+          type: 'success'
+        })
+        this.$store.dispatch(
+          'eventParticipants/getList',
+          this.$route.params.eventId
+        )
+        this.ImportModalTest = false
+      } catch (error) {
+        this.$toast.show({
+          message: error.message || FAILED_IMPORT,
+          type: 'error'
+        })
+      } finally {
+        // this.importModal = false
+        // this.kloter = null
+        // this.$refs.observerImport.reset()
+      }
+    },
+    async blastNotify(invitationsIds, type) {
+      if (this.records.length === 0) {
+        this.$toast.show({
+          message: EVENT_PARTICIPANTS_EMPTY,
+          type: 'error'
+        })
+      } else if (!!invitationsIds && invitationsIds.length === 0) {
+        this.$toast.show({
+          message: EVENT_BLAST_EMPTY,
+          type: 'error'
+        })
+      } else {
+        try {
+          const typeBlast = type || 'sendUndangan'
+          const target =
+            !!invitationsIds && invitationsIds.length > 0 ? 'SELECTED' : 'ALL'
+          // eslint-disable-next-line camelcase
+          const invitations_ids =
+            !!invitationsIds && invitationsIds.length > 0
+              ? invitationsIds.map((inv) => inv.id)
+              : null
+          await this.$store.dispatch(`blastNotif/${typeBlast}`, {
+            idEvent: this.idEvent,
+            target,
+            invitations_ids
+          })
+          this.$toast.show({
+            message: EVENT_BLAST_SUCCESS,
+            type: 'success'
+          })
+          this.blastNotifModal = false
+        } catch (error) {
+          this.$toast.show({
+            message: error.message,
+            type: 'error'
+          })
+        }
+      }
+    }
   }
 }
 </script>

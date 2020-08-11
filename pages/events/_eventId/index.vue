@@ -1,22 +1,26 @@
 <template>
   <v-flex>
     <EventView :data="getCurrent" />
-    <ApplicantDatatable v-if="getCurrent" :id-event="getCurrent.id" />
+    <ApplicantsDatatable
+      :id-event="$route.params.eventId"
+      no-actions
+      @optionChanged="onOptionChange"
+    />
   </v-flex>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-// import { pickBy, identity, isEqual } from 'lodash'
+import { pickBy, identity } from 'lodash'
 import EventView from '@/components/EventView'
-import ApplicantDatatable from '@/components/EventsApplicantsClient'
+import ApplicantsDatatable from '@/components/EventsApplicants'
 
 export default {
   middleware: 'auth',
 
   components: {
     EventView,
-    ApplicantDatatable
+    ApplicantsDatatable
   },
   computed: {
     ...mapGetters('events', ['getCurrent', 'getLoading']),
@@ -29,7 +33,17 @@ export default {
       }
     }
   },
-
+  watch: {
+    '$route.query': {
+      handler(value, oldValue) {
+        this.$store.dispatch(
+          'eventParticipants/getList',
+          this.$route.params.eventId
+        )
+      },
+      deep: true
+    }
+  },
   created() {
     this.$store.dispatch('breadcrumbs/setItems', [
       {
@@ -46,37 +60,29 @@ export default {
 
   mounted() {
     if (this.$route.params.eventId) {
-      this.$store.dispatch('events/resetOptions')
+      this.$store.dispatch('eventParticipants/resetOptions')
       this.$store.dispatch('events/getCurrent', this.$route.params.eventId)
-      const opt = { ...this.options }
-      opt.itemsPerPage = 5000
-      this.options = opt
-      this.$store.dispatch(
-        'eventParticipants/getList',
-        this.$route.params.eventId
-      )
     } else {
-      this.$router.replace('events')
+      this.$router.replace('/events')
     }
   },
 
   methods: {
-    // onOptionChange(value) {
-    //   let query = { ...this.$route.query }
-    //   if (value.page) query.page = value.page
-    //   query.perPage = value.itemsPerPage || null
-    //   query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
-    //   query.sortOrder = value.sortDesc && value.sortDesc[0] ? 'desc' : 'asc'
-    //   query = pickBy(query, identity)
-    //   if (!isEqual(query, this.$route.query)) {
-    //     this.$router
-    //       .replace({
-    //         name: this.$router.name,
-    //         query
-    //       })
-    //       .catch(() => {})
-    //   }
-    // }
+    onOptionChange(value) {
+      let query = { ...this.$route.query }
+      if (value.page) query.page = value.page
+      query.perPage = value.itemsPerPage || null
+      query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
+      query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
+      query.status = value.status
+      query.keyWords = value.keyWords
+      query = pickBy(query, identity)
+      this.$router
+        .replace({
+          query
+        })
+        .catch(() => {})
+    }
   }
 }
 </script>

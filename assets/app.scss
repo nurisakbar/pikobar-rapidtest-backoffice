@@ -46,5 +46,29 @@
 }
 .bg-navbar {
   background: linear-gradient(90deg, #0286C2 4.69%, #01BCDA 97.9%);
-  // background: $primary;
+}
+.pkbr-table {
+  .v-data-table__wrapper {
+    max-height: calc(100vh - 230px);
+  }
+  &.sticky-last {
+    .v-data-table__wrapper {
+      > table {
+        > thead, tbody{
+          > tr {
+            th:last-child, td:last-child {
+              position: sticky;
+              right: 0;
+              background-color: white;
+            }
+          }
+        }
+      }
+    }
+  }
+  .v-data-footer__select {
+    .v-select {
+      margin-top: 5px;
+    }
+  }
 }

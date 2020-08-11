@@ -71,12 +71,12 @@
         show-select
         item-key="rdt_applicant_id"
       >
-        <template v-slot:item.applicant.status="{ value }">
+        <template v-slot:[`item.applicant.status`]="{ value }">
           <v-chip small class="ma-2" :color="value | getChipColor">
             {{ value }}
           </v-chip>
         </template>
-        <template v-slot:item.applicant.gender="{ item }">
+        <template v-slot:[`item.applicant.gender`]="{ item }">
           <v-layout justify-start>
             <template v-if="item.applicant.gender === '1'">
               Laki-Laki
@@ -86,14 +86,14 @@
             </template>
           </v-layout>
         </template>
-        <template v-slot:item.attended_at="{ item }">
+        <template v-slot:[`item.attended_at`]="{ item }">
           <v-layout v-if="item.attended_at" justify-end>
             {{
               $dateFns.format(new Date(item.attended_at), 'dd MMMM yyyy HH:mm')
             }}
           </v-layout>
         </template>
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:[`item.actions`]="{ item }">
           <v-icon class="mr-2" @click="modalEditLabCodeOpen(item)">
             mdi-pencil
           </v-icon>

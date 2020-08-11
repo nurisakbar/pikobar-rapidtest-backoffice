@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;">
     <h3 class="mb-1">{{ event_name }}</h3>
-    <v-card>
+    <v-card class="rounded-b-0">
       <v-card-text>
         <v-row no-gutters>
           <v-col cols="8">

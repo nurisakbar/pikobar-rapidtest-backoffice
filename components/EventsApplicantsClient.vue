@@ -75,6 +75,13 @@
             </template>
           </v-layout>
         </template>
+        <template v-slot:item.attended_at="{ item }">
+          <v-layout v-if="item.attended_at" justify-end>
+            {{
+              $dateFns.format(new Date(item.attended_at), 'dd MMMM yyyy HH:mm')
+            }}
+          </v-layout>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon class="mr-2" @click="$router.push(`events/${item.id}/edit`)">
             mdi-card-search
@@ -194,6 +201,8 @@ const headers = [
   { text: 'Kloter', value: 'rdt_event_schedule_id', width: 100 },
   { text: 'Jenis Kelamin', value: 'applicant.gender', width: 200 },
   { text: 'Usia', value: 'applicant.age', width: 100 },
+  { text: 'Checkin', value: 'attended_at', width: 150 },
+  { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
   { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
   { text: 'Actions', value: 'actions', sortable: false, width: 100 }
 ]

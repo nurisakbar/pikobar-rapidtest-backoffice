@@ -52,11 +52,22 @@
       </v-col>
     </v-row>
     <v-card>
+      <v-card-title>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
       <v-data-table
         v-model="pesertaSelected"
         :headers="headers"
         :items="records"
         :loading="loading"
+        :search="search"
         show-select
         item-key="rdt_applicant_id"
       >
@@ -222,6 +233,7 @@ export default {
   data() {
     return {
       headers,
+      search: null,
       pesertaSelected: [],
       blastNotifModal: false,
       ImportModalTest: false,

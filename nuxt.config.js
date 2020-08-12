@@ -28,7 +28,8 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || ''
+        content:
+          'Aplikasi Pendaftaran Tes Masif COVID-19 PIKOBAR Provinsi Jawa Barat'
       },
       { hid: 'theme-color', name: 'theme-color', content: '#FFFFFF' }
     ],

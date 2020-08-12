@@ -12,10 +12,10 @@
               </v-col>
               <v-col cols="4">
                 <label class="text-subtitle-2 grey--text">
-                  Jumlah peserta
+                  Jumlah Peserta / Jumlah Hadir
                 </label>
                 <p class="font-weight-medium mt-2 mb-0">
-                  {{ invitations_count }}
+                  {{ invitations_count }} / {{ attendees_count }}
                 </p>
               </v-col>
               <v-col cols="4">
@@ -116,6 +116,7 @@ export default {
       event_location: null,
       city: null,
       invitations_count: null,
+      attendees_count: null,
       status: 'DRAFT',
       kloter: []
     }
@@ -136,6 +137,7 @@ export default {
         ? this.$dateFns.format(new Date(val.end_at), 'dd-MM-yyyy HH:mm')
         : null
       this.invitations_count = val ? val.invitations_count : null
+      this.attendees_count = val ? val.attendees_count : null
       this.kloter = val.schedules.map((sch) => ({
         ...sch,
         start_at: this.$dateFns.format(new Date(sch.start_at), 'HH:mm'),

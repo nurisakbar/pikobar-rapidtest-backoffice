@@ -2,7 +2,7 @@
   <v-flex>
     <EventView :data="getCurrent" />
     <ApplicantsDatatable
-      :id-event="$route.params.eventId"
+      :id-event="$route.params.eventId - 0"
       no-actions
       @optionChanged="onOptionChange"
     />
@@ -36,10 +36,12 @@ export default {
   watch: {
     '$route.query': {
       handler(value, oldValue) {
-        this.$store.dispatch(
-          'eventParticipants/getList',
-          this.$route.params.eventId
-        )
+        this.$store.dispatch('eventParticipants/getRecords', {
+          debounced:
+            value.keyWords !== oldValue.keyWords ||
+            value.page !== oldValue.page,
+          eventId: this.$route.params.eventId
+        })
       },
       deep: true
     }
@@ -60,7 +62,10 @@ export default {
 
   mounted() {
     if (this.$route.params.eventId) {
-      this.$store.dispatch('eventParticipants/resetOptions')
+      this.$store.dispatch(
+        'eventParticipants/getList',
+        this.$route.params.eventId
+      )
       this.$store.dispatch('events/getCurrent', this.$route.params.eventId)
     } else {
       this.$router.replace('/events')
@@ -74,7 +79,6 @@ export default {
       query.perPage = value.itemsPerPage || null
       query.sortBy = value.sortBy.length > 0 ? value.sortBy[0] : null
       query.sortOrder = value.sortDesc[0] ? 'desc' : 'asc'
-      query.status = value.status
       query.keyWords = value.keyWords
       query = pickBy(query, identity)
       this.$router

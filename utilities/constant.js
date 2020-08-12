@@ -13,6 +13,10 @@ export const SUCCESS_ADD_PARTICIPANTS =
   'Peserta berhasil di daftarkan dalam kegiatan'
 export const FAILED_ADD_PARTICIPANTS =
   'Maaf, ada kesalahan dalam mendaftarkan peserta'
+export const SET_LABCODE_SUCCESS =
+  'Kode Sampel Hasil Lab Berhasil di perbaharui'
+export const SET_LABCODE_FAILED =
+  'Maaf, ada kesalahan dalam menyimpan Kode Sampel Hasil Lab '
 
 export const DEFAULT_FILTER = {
   groupBy: [],

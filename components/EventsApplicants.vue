@@ -1,5 +1,56 @@
 <template>
   <div style="width: 100%;">
+    <v-row>
+      <v-col cols="12" class="d-flex align-center pb-0">
+        <h3>Daftar Peserta</h3>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" :to="`/events/${$route.params.eventId}/add`">
+          <v-icon class="mr-1">mdi-plus-circle</v-icon>
+          Tambah Peserta
+        </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn color="primary" @click="openModalNotif('Undangan')">
+          <v-icon class="mr-1">mdi-email-send</v-icon>
+          Kirim Undangan
+        </v-btn>
+        <v-btn color="success" @click="openModalNotif('Hasil Test')">
+          <v-icon class="mr-1">mdi-file-send-outline</v-icon>
+          Kirim Hasil Test
+        </v-btn>
+      </v-col>
+      <v-spacer></v-spacer>
+      <v-col cols="auto">
+        <v-btn color="success" @click="openModalImportHasil">
+          <v-icon class="mr-1">mdi-file-import-outline</v-icon>
+          Import Hasil Test
+        </v-btn>
+        <v-menu bottom offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn class="pr-1" v-bind="attrs" color="error" v-on="on">
+              Export
+              <v-icon class="ml-1">mdi-menu-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, i) in [
+                { icon: 'table', text: 'CSV' },
+                { icon: 'pdf-box', text: 'PDF' },
+                { icon: 'printer', text: 'PRINT' }
+              ]"
+              :key="i"
+              @click="() => {}"
+            >
+              <v-list-item-title>
+                <v-icon class="mr-1">mdi-{{ item.icon }}</v-icon>
+                {{ item.text }}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
+    </v-row>
     <v-data-table
       v-model="pesertaSelected"
       class="v-card v-sheet rounded-t-0 pkbr-table sticky-last"
@@ -16,55 +67,16 @@
       }"
     >
       <template slot="top">
-        <div class="d-flex flex-wrap">
-          <v-col cols="12" class="d-flex align-center pb-0">
-            <h3>Daftar Peserta</h3>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" :to="`/events/${$route.params.eventId}/add`">
-              <v-icon class="mr-1">mdi-plus-circle</v-icon>
-              Tambah Peserta
-            </v-btn>
-          </v-col>
-          <v-col cols="auto">
-            <v-btn color="primary" @click="openModalNotif('Undangan')">
-              <v-icon class="mr-1">mdi-email-send</v-icon>
-              Kirim Undangan
-            </v-btn>
-            <v-btn color="success" @click="openModalNotif('Hasil Test')">
-              <v-icon class="mr-1">mdi-file-send-outline</v-icon>
-              Kirim Hasil Test
-            </v-btn>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="auto">
-            <v-btn color="success" @click="openModalImportHasil">
-              <v-icon class="mr-1">mdi-file-import-outline</v-icon>
-              Import Hasil Test
-            </v-btn>
-            <v-menu bottom offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn class="pr-1" v-bind="attrs" color="error" v-on="on">
-                  Export
-                  <v-icon class="ml-1">mdi-menu-down</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="(item, i) in [
-                    { icon: 'table', text: 'CSV' },
-                    { icon: 'pdf-box', text: 'PDF' },
-                    { icon: 'printer', text: 'PRINT' }
-                  ]"
-                  :key="i"
-                  @click="() => {}"
-                >
-                  <v-list-item-title>
-                    <v-icon class="mr-1">mdi-{{ item.icon }}</v-icon>
-                    {{ item.text }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+        <div class="d-flex">
+          <v-col cols="6">
+            <v-text-field
+              v-model="searchKey"
+              label="Nama Peserta / No. Pendaftaran"
+              clearable
+              outlined
+              dense
+              hide-details
+            />
           </v-col>
         </div>
       </template>
@@ -97,10 +109,7 @@
         </v-layout>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon class="mr-2" @click="$router.push(`events/${item.id}/edit`)">
-          mdi-card-search
-        </v-icon>
-        <v-icon class="mr-2">
+        <v-icon class="mr-2" @click="modalEditLabCodeOpen(item.id)">
           mdi-pencil
         </v-icon>
       </template>
@@ -190,6 +199,12 @@
         </form>
       </validation-observer>
     </v-dialog>
+    <event-applicant-edit-lab-code-dialog
+      :open="modalEditLabCode"
+      :record-id="modalEditLabCodeId"
+      @close="modalEditLabCodeClose"
+      @save="modalEditLabCodeSave"
+    />
   </div>
 </template>
 
@@ -201,8 +216,13 @@ import {
   EVENT_BLAST_SUCCESS,
   EVENT_PARTICIPANTS_EMPTY,
   SUCCESS_IMPORT,
-  FAILED_IMPORT
+  FAILED_IMPORT,
+  SET_LABCODE_SUCCESS,
+  SET_LABCODE_FAILED,
+  DEFAULT_PAGINATION,
+  DEFAULT_FILTER
 } from '@/utilities/constant'
+import EventApplicantEditLabCodeDialog from '@/components/EventApplicantEditLabCodeDialog'
 
 const headers = [
   {
@@ -215,14 +235,18 @@ const headers = [
   { text: 'Kloter', value: 'rdt_event_schedule_id', width: 85 },
   { text: 'Jenis Kelamin', value: 'applicant.gender', width: 140 },
   { text: 'Usia', value: 'applicant.age', width: 85 },
+  { text: 'Checkin', value: 'attended_at', sortable: false, width: 150 },
+  { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
+  { text: 'Hasil Test', value: 'lab_result_type', sortable: false, width: 100 },
   { text: 'Terkirim', value: 'notified_at', sortable: false, width: 150 },
-  { text: 'Kehadiran', value: 'attended_at', sortable: false, width: 150 },
-  { text: 'Hasil Test', value: 'lab_result_type', sortable: false, width: 150 },
   { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
-  { text: 'Actions', value: 'actions', sortable: false, width: 100 }
+  { text: 'Actions', value: 'actions', sortable: false, align: 'center' }
 ]
 
 export default {
+  components: {
+    EventApplicantEditLabCodeDialog
+  },
   filters: {
     getChipColor
   },
@@ -241,7 +265,9 @@ export default {
       blastNotifModal: false,
       ImportModalTest: false,
       modalType: 'Undangan',
-      importFile: null
+      importFile: null,
+      modalEditLabCode: false,
+      modalEditLabCodeId: null
     }
   },
 
@@ -262,6 +288,18 @@ export default {
     },
     totalItems() {
       return this.$store.getters['eventParticipants/getTotalData']
+    },
+    searchKey: {
+      async set(value) {
+        await this.$store.dispatch('eventParticipants/resetOptions')
+        this.options = {
+          ...this.options,
+          keyWords: value
+        }
+      },
+      get() {
+        return this.$route.query.keyWords
+      }
     }
   },
 
@@ -275,24 +313,21 @@ export default {
 
   mounted() {
     const options = { ...this.options }
-    if (this.$route.query.page) {
-      options.page = parseInt(this.$route.query.page)
-    }
-    if (this.$route.query.perPage) {
-      options.perPage = parseInt(this.$route.query.perPage)
-    }
-    if (this.$route.query.sortBy) {
-      options.sortBy = [this.$route.query.sortBy]
-    }
-    if (this.$route.query.sortOrder) {
-      options.sortOrder = [this.$route.query.sortOrder]
-    }
-    if (this.$route.query.keyWords) {
-      options.keyWords = this.$route.query.keyWords
-    }
-    if (this.$route.query.status) {
-      options.status = this.$route.query.status
-    }
+    options.page = this.$route.query.page
+      ? parseInt(this.$route.query.page)
+      : DEFAULT_PAGINATION.page
+    options.itemsPerPage = this.$route.query.perPage
+      ? parseInt(this.$route.query.perPage)
+      : DEFAULT_PAGINATION.itemsPerPage
+    options.sortBy = this.$route.query.sortBy
+      ? [this.$route.query.sortBy]
+      : DEFAULT_FILTER.sortBy
+    options.sortDesc = this.$route.query.sortOrder
+      ? [this.$route.query.sortOrder === 'desc']
+      : DEFAULT_FILTER.sortDesc
+    options.keyWords = this.$route.query.keyWords
+      ? this.$route.query.keyWords
+      : DEFAULT_FILTER.keyWords
     this.options = options
     this.$emit('optionChanged', options)
   },
@@ -370,6 +405,37 @@ export default {
             type: 'error'
           })
         }
+      }
+    },
+    modalEditLabCodeOpen(id) {
+      this.modalEditLabCodeId = id
+      this.modalEditLabCode = true
+    },
+    modalEditLabCodeClose() {
+      this.modalEditLabCodeId = null
+      this.modalEditLabCode = false
+    },
+    async modalEditLabCodeSave(payload) {
+      try {
+        await this.$store.dispatch('eventParticipants/setLabcode', {
+          idEvent: this.idEvent,
+          ...payload
+        })
+        this.$toast.show({
+          message: SET_LABCODE_SUCCESS,
+          type: 'success'
+        })
+        this.modalEditLabCodeClose()
+      } catch (error) {
+        this.$toast.show({
+          message: error.message || SET_LABCODE_FAILED,
+          type: 'error'
+        })
+      } finally {
+        this.$store.dispatch(
+          'eventParticipants/getList',
+          this.$route.params.eventId
+        )
       }
     }
   }

@@ -130,9 +130,10 @@ import {
 import { getChipColor } from '@/utilities/formater'
 
 const headers = [
-  { text: 'Nama Kegiatan', value: 'event_name', sortable: false, width: 150 },
+  { text: 'ID', value: 'id', width: 80 },
+  { text: 'Nama Kegiatan', value: 'event_name', width: 300 },
   { text: 'Tanggal', value: 'tanggal', width: 150 },
-  { text: 'Lokasi', value: 'event_location', width: 200 },
+  { text: 'Lokasi', value: 'event_location' },
   { text: 'Kota/Kab', value: 'city.name', width: 200 },
   { text: 'Peserta', value: 'invitations_count', width: 100 },
   { text: 'Status', value: 'status' },

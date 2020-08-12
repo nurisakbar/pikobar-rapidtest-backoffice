@@ -152,6 +152,7 @@ import ApplicantViewDialog from '@/components/ApplicantViewDialog'
 // import { getChipColor } from '@/utilities/formater'
 
 const headers = [
+  { text: 'ID', value: 'id', width: 80 },
   {
     text: 'Nomor Pendaftaran',
     value: 'registration_code',

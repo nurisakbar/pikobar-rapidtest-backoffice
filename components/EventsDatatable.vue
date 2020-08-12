@@ -40,7 +40,11 @@
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto">
-            <v-btn color="primary" to="/events/create">
+            <v-btn
+              v-if="allow.includes('create-events')"
+              color="primary"
+              to="/events/create"
+            >
               <v-icon class="mr-1">
                 mdi-plus-circle
               </v-icon>
@@ -69,14 +73,14 @@
           mdi-card-search
         </v-icon>
         <v-icon
-          v-if="allow.includes('manage-events')"
+          v-if="allow.includes('edit-events')"
           class="mr-2"
           @click="$router.push(`events/${item.id}/edit`)"
         >
           mdi-pencil
         </v-icon>
         <v-icon
-          v-if="allow.includes('manage-events')"
+          v-if="allow.includes('delete-events')"
           @click="selectToRemove({ id: item.id, name: item.event_name })"
         >
           mdi-delete

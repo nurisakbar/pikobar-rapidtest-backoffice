@@ -101,33 +101,36 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon
-          v-if="allow.includes('view-events')"
+          v-if="allow.includes('view-applicants')"
           class="mr-2"
           @click="viewItem(item)"
         >
           mdi-card-search
         </v-icon>
         <v-icon
-          v-if="allow.includes('view-events')"
+          v-if="allow.includes('edit-applicants')"
           class="mr-2"
           @click="editItem(item)"
         >
           mdi-pencil
         </v-icon>
-        <v-icon v-if="allow.includes('view-events')" @click="deleteItem(item)">
+        <v-icon
+          v-if="allow.includes('delete-applicants')"
+          @click="deleteItem(item)"
+        >
           mdi-delete
         </v-icon>
       </template>
     </v-data-table>
 
     <applicant-view-dialog
-      v-if="allow.includes('view-events')"
+      v-if="allow.includes('view-applicants')"
       :open="viewDialog"
       :record-id="viewRecordId"
       @close="viewClose"
     />
     <applicant-edit-dialog
-      v-if="allow.includes('view-events')"
+      v-if="allow.includes('edit-applicants')"
       :open="editDialog"
       :record-id="editRecordId"
       @close="editClose"

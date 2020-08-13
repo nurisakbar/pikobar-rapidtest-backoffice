@@ -35,12 +35,11 @@
           <v-list>
             <v-list-item
               v-for="(item, i) in [
-                { icon: 'table', text: 'CSV' },
-                { icon: 'pdf-box', text: 'PDF' },
-                { icon: 'printer', text: 'PRINT' }
+                { icon: 'table', format: 'xls', text: 'Excel' },
+                { icon: 'pdf-box', format: 'pdf', text: 'PDF' }
               ]"
               :key="i"
-              @click="() => {}"
+              @click="downloadExport(item.format)"
             >
               <v-list-item-title>
                 <v-icon class="mr-1">mdi-{{ item.icon }}</v-icon>
@@ -437,6 +436,42 @@ export default {
           this.$route.params.eventId
         )
       }
+    },
+
+    downloadExport(format) {
+      this.$axios
+        .get(
+          `/rdt/events/${this.idEvent}/participants-export?format=${format}`,
+          {
+            responseType: 'blob'
+          }
+        )
+        .then((response) => {
+          // @TODO hacky solution
+          // eslint-disable-next-line no-new
+          const blob = new Blob([response.data], { type: response.data.type })
+
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+
+          link.href = url
+
+          const contentDisposition = response.headers['content-disposition']
+          let fileName = 'unknown'
+
+          if (contentDisposition) {
+            const fileNameMatch = contentDisposition.match(/filename="(.+)"/)
+            if (fileNameMatch.length === 2) {
+              fileName = fileNameMatch[1]
+            }
+          }
+
+          link.setAttribute('download', fileName)
+          document.body.appendChild(link)
+          link.click()
+          link.remove()
+          window.URL.revokeObjectURL(url)
+        })
     }
   }
 }

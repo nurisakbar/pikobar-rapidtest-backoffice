@@ -49,7 +49,6 @@ export const mutations = {
       mustSort: payload.mustSort,
       sortBy: payload.sortBy,
       sortDesc: payload.sortDesc,
-      sortOrder: payload.sortOrder,
       status: payload.status,
       keyWords: payload.keyWords
     }

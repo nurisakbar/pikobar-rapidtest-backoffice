@@ -22,7 +22,7 @@ export const DEFAULT_FILTER = {
   groupBy: [],
   groupDesc: [],
   sortBy: ['created_at'],
-  sortDesc: [false],
+  sortDesc: [true],
   sortOrder: 'desc',
   status: 'published',
   multiSort: false,

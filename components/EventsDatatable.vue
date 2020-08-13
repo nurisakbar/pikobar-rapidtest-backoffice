@@ -53,7 +53,7 @@
           </v-col>
         </div>
       </template>
-      <template v-slot:[`item.tanggal`]="{ item }">
+      <template v-slot:[`item.start_at`]="{ item }">
         {{ formatTanggal(item.start_at, item.end_at) }}
       </template>
       <template v-slot:[`item.end_at`]="{ value }">
@@ -132,7 +132,7 @@ import { getChipColor } from '@/utilities/formater'
 const headers = [
   { text: 'ID', value: 'id', width: 80 },
   { text: 'Nama Kegiatan', value: 'event_name', width: 300 },
-  { text: 'Tanggal', value: 'tanggal', width: 150 },
+  { text: 'Tanggal', value: 'start_at', width: 150 },
   { text: 'Lokasi', value: 'event_location' },
   { text: 'Kota/Kab', value: 'city.name', width: 200 },
   { text: 'Peserta', value: 'invitations_count', width: 100 },
@@ -238,7 +238,7 @@ export default {
       options.sortBy = [this.$route.query.sortBy]
     }
     if (this.$route.query.sortOrder) {
-      options.sortOrder = [this.$route.query.sortOrder]
+      options.sortDesc = [this.$route.query.sortOrder === 'desc']
     }
     if (this.$route.query.keyWords) {
       options.keyWords = this.$route.query.keyWords

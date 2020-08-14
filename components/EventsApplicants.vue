@@ -1,15 +1,20 @@
 <template>
   <div style="width: 100%;">
     <v-row>
-      <v-col cols="12" class="d-flex align-center pb-0">
+      <v-col cols="6" class="d-flex align-center pb-0">
         <h3>Daftar Peserta</h3>
-        <v-spacer></v-spacer>
+      </v-col>
+      <v-col
+        v-if="allow.includes('manage-events')"
+        cols="6"
+        class="d-flex align-center justify-end pb-0"
+      >
         <v-btn color="primary" :to="`/events/${$route.params.eventId}/add`">
           <v-icon class="mr-1">mdi-plus-circle</v-icon>
           Tambah Peserta
         </v-btn>
       </v-col>
-      <v-col cols="auto">
+      <v-col v-if="allow.includes('manage-events')" cols="6">
         <v-btn color="primary" @click="openModalNotif('Undangan')">
           <v-icon class="mr-1">mdi-email-send</v-icon>
           Kirim Undangan
@@ -21,7 +26,11 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="auto">
-        <v-btn color="success" @click="openModalImportHasil">
+        <v-btn
+          v-if="allow.includes('manage-events')"
+          color="success"
+          @click="openModalImportHasil"
+        >
           <v-icon class="mr-1">mdi-file-import-outline</v-icon>
           Import Hasil Test
         </v-btn>
@@ -255,6 +264,10 @@ export default {
     idEvent: {
       type: [Number, String],
       default: null
+    },
+    allow: {
+      type: Array,
+      default: () => []
     }
   },
 

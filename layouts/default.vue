@@ -117,7 +117,7 @@ export default {
       menuItems: [
         {
           icon: 'mdi-apps',
-          title: 'Welcome',
+          title: 'Dashboard',
           to: '/',
           permission: 'access-backoffice'
         },

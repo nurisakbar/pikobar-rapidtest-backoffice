@@ -1,8 +1,12 @@
 <template>
   <v-flex>
-    <EventView :data="getCurrent" />
+    <EventView
+      :data="getCurrent"
+      :can-edit="permissions.includes('edit-events')"
+    />
     <ApplicantsDatatable
       :id-event="$route.params.eventId - 0"
+      :allow="permissions"
       no-actions
       @optionChanged="onOptionChange"
     />
@@ -23,6 +27,7 @@ export default {
     ApplicantsDatatable
   },
   computed: {
+    ...mapGetters('auth', ['permissions']),
     ...mapGetters('events', ['getCurrent', 'getLoading']),
     options: {
       set(value) {

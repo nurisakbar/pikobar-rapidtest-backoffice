@@ -76,7 +76,7 @@
         </v-row>
       </v-card-text>
       <v-divider></v-divider>
-      <v-card-actions>
+      <v-card-actions v-if="canEdit">
         <v-spacer></v-spacer>
         <v-btn
           color="grey"
@@ -103,6 +103,10 @@ export default {
     data: {
       type: Object,
       default: null
+    },
+    canEdit: {
+      type: Boolean,
+      default: false
     }
   },
 

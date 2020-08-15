@@ -13,19 +13,6 @@ export const getters = {
   user: (state) => state.user,
   token: (state) => state.token,
   role: (state) => state.role,
-  roleLabel: (state) => {
-    if (state.role === 'dinkes-provinsi-operator') {
-      return 'Operator Dinas Kesehatan Provinsi'
-    }
-
-    if (state.role === 'dinkes-provinsi-monitoring') {
-      return 'Monitoring Dinas Kesehatan Provinsi'
-    }
-
-    if (state.role === 'dinkes-kabkota-operator') {
-      return 'Operator Dinas Kesehatan'
-    }
-  },
   permissions: (state) => state.permissions,
   check: (state) => state.user !== null
 }

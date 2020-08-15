@@ -13,7 +13,9 @@
             <v-list-item-title>
               {{ user.firstName }} {{ user.lastName }}
             </v-list-item-title>
-            <v-list-item-subtitle>{{ roleLabel }}</v-list-item-subtitle>
+            <v-list-item-subtitle v-if="user.attributes.position_title">
+              {{ user.attributes.position_title[0] }}
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -155,7 +157,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['user', 'roleLabel', 'permissions']),
+    ...mapGetters('auth', ['user', 'permissions']),
     ...mapGetters('breadcrumbs', ['getItems'])
   },
 

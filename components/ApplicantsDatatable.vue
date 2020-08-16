@@ -368,8 +368,9 @@ export default {
       this.createDialog = false
     },
 
-    createSave() {
+    async createSave() {
       this.createClose()
+      await this.$store.dispatch('applicants/getList')
     },
 
     viewItem(item) {
@@ -396,9 +397,9 @@ export default {
       this.editRecordId = null
     },
 
-    editSave() {
+    async editSave() {
       this.editClose()
-      // this.getRecords()
+      await this.$store.dispatch('applicants/getList')
     },
 
     getLatestInvitation(invitations) {

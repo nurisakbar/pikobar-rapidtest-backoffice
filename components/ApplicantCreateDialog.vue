@@ -12,6 +12,45 @@
               <v-col cols="12">
                 <v-text-field v-model="name" label="Nama Peserta" outlined />
               </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="nik" label="NIK" outlined />
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="gender"
+                  :items="[
+                    { text: 'Laki-Laki', value: 'M' },
+                    { text: 'Perempuan', value: 'F' }
+                  ]"
+                  label="Jenis Kelamin"
+                  outlined
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="phone_number"
+                  label="Nomor Telepon"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="address"
+                  label="Alamat Tempat Tinggal Sekarang"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="status"
+                  :items="[
+                    { text: 'Calon Peserta', value: 'NEW' },
+                    { text: 'Disetujui', value: 'APPROVED' }
+                  ]"
+                  label="Status"
+                  outlined
+                ></v-select>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -41,8 +80,12 @@ export default {
 
   data() {
     return {
-      registrationCode: null,
-      name: null
+      name: null,
+      nik: null,
+      gender: null,
+      address: null,
+      phone_number: null,
+      status: null
     }
   },
 
@@ -50,7 +93,12 @@ export default {
     async save() {
       try {
         await this.$axios.$post(`/rdt/applicants`, {
-          name: this.name
+          name: this.name,
+          gender: this.gender,
+          nik: this.nik,
+          address: this.address,
+          phone_number: this.phone_number,
+          status: this.status
         })
 
         this.$emit('save')

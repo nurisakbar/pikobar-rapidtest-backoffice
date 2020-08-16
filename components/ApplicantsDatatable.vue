@@ -20,7 +20,7 @@
           <v-col v-if="title" cols="12">
             {{ title }}
           </v-col>
-          <v-col cols="3">
+          <v-col cols="auto">
             <v-text-field
               v-model="searchKey"
               label="Nama Peserta / Nomor Pendaftaran"
@@ -30,7 +30,7 @@
               hide-details
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="auto">
             <pkbr-select
               v-model="city"
               :items="getKabkot"
@@ -43,7 +43,6 @@
               allow-null
             />
           </v-col>
-          <v-spacer></v-spacer>
           <v-col cols="auto">
             <v-text-field
               v-model="sessionId"
@@ -53,6 +52,19 @@
               dense
               hide-details
             />
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto">
+            <v-btn
+              v-if="allow.includes('create-applicants')"
+              color="primary"
+              @click="createDialog = true"
+            >
+              <v-icon class="mr-1">
+                mdi-plus-circle
+              </v-icon>
+              Tambah Peserta
+            </v-btn>
           </v-col>
         </div>
       </template>
@@ -123,6 +135,12 @@
       </template>
     </v-data-table>
 
+    <applicant-create-dialog
+      :open="createDialog"
+      @close="createClose"
+      @save="createSave"
+    />
+
     <applicant-view-dialog
       v-if="allow.includes('view-applicants')"
       :open="viewDialog"
@@ -142,6 +160,7 @@
 <script>
 import { isEqual } from 'lodash'
 import { mapGetters } from 'vuex'
+import ApplicantCreateDialog from '@/components/ApplicantCreateDialog'
 import ApplicantEditDialog from '@/components/ApplicantEditDialog'
 import ApplicantViewDialog from '@/components/ApplicantViewDialog'
 // import {
@@ -180,6 +199,7 @@ const headers = [
 ]
 export default {
   components: {
+    ApplicantCreateDialog,
     ApplicantViewDialog,
     ApplicantEditDialog
   },
@@ -218,6 +238,7 @@ export default {
   data() {
     return {
       tempValue: this.value,
+      createDialog: false,
       editDialog: false,
       editRecordId: null,
       viewDialog: false,
@@ -341,6 +362,14 @@ export default {
 
     doFilter() {
       // this.getRecords()
+    },
+
+    createClose() {
+      this.createDialog = false
+    },
+
+    createSave() {
+      this.createClose()
     },
 
     viewItem(item) {

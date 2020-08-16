@@ -35,6 +35,13 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
+                  v-model="city_code"
+                  label="Kab/Kota Tinggal Sekarang"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
                   v-model="address"
                   label="Alamat Tempat Tinggal Sekarang"
                   outlined
@@ -83,6 +90,7 @@ export default {
       name: null,
       nik: null,
       gender: null,
+      city_code: null,
       address: null,
       phone_number: null,
       status: null
@@ -92,10 +100,12 @@ export default {
   methods: {
     async save() {
       try {
+        // @TODO change to vuex actions
         await this.$axios.$post(`/rdt/applicants`, {
           name: this.name,
           gender: this.gender,
           nik: this.nik,
+          city_code: this.city_code,
           address: this.address,
           phone_number: this.phone_number,
           status: this.status

@@ -370,7 +370,7 @@ export default {
 
     async createSave() {
       this.createClose()
-      await this.$store.dispatch('applicants/getList')
+      await this.$store.dispatch('applicants/getList') // @TODO lost current state?
     },
 
     viewItem(item) {
@@ -399,7 +399,7 @@ export default {
 
     async editSave() {
       this.editClose()
-      await this.$store.dispatch('applicants/getList')
+      await this.$store.dispatch('applicants/getList') // @TODO lost current state?
     },
 
     getLatestInvitation(invitations) {

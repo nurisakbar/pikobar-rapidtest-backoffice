@@ -13,12 +13,58 @@
                 <v-text-field
                   v-model="registrationCode"
                   label="Nomor Pendaftaran"
-                  outlined
+                  filled
                   readonly
                 />
               </v-col>
               <v-col cols="12">
                 <v-text-field v-model="name" label="Nama Peserta" outlined />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="nik" label="NIK" outlined />
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="gender"
+                  :items="[
+                    { text: 'Laki-Laki', value: 'M' },
+                    { text: 'Perempuan', value: 'F' }
+                  ]"
+                  label="Jenis Kelamin"
+                  outlined
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="phone_number"
+                  label="Nomor Telepon"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="city_code"
+                  label="Kab/Kota Tinggal Sekarang"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="address"
+                  label="Alamat Tempat Tinggal Sekarang"
+                  outlined
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="status"
+                  :items="[
+                    { text: 'Calon Peserta', value: 'NEW' },
+                    { text: 'Disetujui', value: 'APPROVED' }
+                  ]"
+                  label="Status"
+                  outlined
+                ></v-select>
               </v-col>
             </v-row>
           </v-container>
@@ -55,7 +101,13 @@ export default {
   data() {
     return {
       registrationCode: null,
-      name: null
+      name: null,
+      nik: null,
+      gender: null,
+      city_code: null,
+      address: null,
+      phone_number: null,
+      status: null
     }
   },
 
@@ -74,6 +126,12 @@ export default {
 
       this.registrationCode = data.registration_code
       this.name = data.name
+      this.nik = data.nik
+      this.gender = data.gender
+      this.city_code = data.city_code
+      this.address = data.address
+      this.phone_number = data.phone_number
+      this.status = data.status
     },
 
     async save() {
@@ -81,7 +139,13 @@ export default {
 
       try {
         await this.$axios.$put(`/rdt/applicants/${id}`, {
-          name: this.name
+          name: this.name,
+          gender: this.gender,
+          nik: this.nik,
+          city_code: this.city_code,
+          address: this.address,
+          phone_number: this.phone_number,
+          status: this.status
         })
 
         this.$emit('save')

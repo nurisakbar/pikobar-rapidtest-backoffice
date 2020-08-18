@@ -110,6 +110,7 @@
 <script>
 /* eslint-disable camelcase */
 import { mapGetters } from 'vuex'
+import { format } from 'date-fns'
 
 export default {
   props: {
@@ -144,9 +145,13 @@ export default {
       let kloter = [null]
       if (val) {
         kloter = val.schedules.map((sch) => {
-          const [startH, startM] = sch.start_at.split('T')[1].split(':')
-          const [endH, endM] = sch.end_at.split('T')[1].split(':')
-          return `${startH}:${startM}-${endH}:${endM}`
+          const scheduleStart = new Date(sch.start_at)
+          const scheduleEnd = new Date(sch.end_at)
+
+          const inputScheduleStart = format(scheduleStart, 'HH:mm')
+          const inputScheduleEnd = format(scheduleEnd, 'HH:mm')
+
+          return `${inputScheduleStart}-${inputScheduleEnd}`
         })
       }
       this.event_name = val ? val.event_name : null

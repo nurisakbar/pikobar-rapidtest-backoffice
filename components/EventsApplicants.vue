@@ -79,7 +79,7 @@
           <v-col cols="6">
             <v-text-field
               v-model="searchKey"
-              label="Nama Peserta / No. Pendaftaran"
+              label="Nama Peserta / No. Pendaftaran / Kode Sampel"
               clearable
               outlined
               dense
@@ -108,10 +108,10 @@
       </template>
       <template v-slot:[`item.applicant.gender`]="{ item }">
         <v-layout justify-start>
-          <template v-if="item.applicant.gender === '1'">
+          <template v-if="item.applicant.gender === 'M'">
             Laki-Laki
           </template>
-          <template v-if="item.applicant.gender === '0'">
+          <template v-if="item.applicant.gender === 'F'">
             Perempuan
           </template>
         </v-layout>
@@ -245,7 +245,7 @@ const headers = [
   { text: 'Usia', value: 'applicant.age', width: 85 },
   { text: 'Checkin', value: 'attended_at', width: 250 },
   { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
-  { text: 'Hasil Test', value: 'lab_result_type', sortable: false, width: 100 },
+  { text: 'Hasil Test', value: 'lab_result_type', width: 150 },
   { text: 'Terkirim', value: 'notified_at', sortable: false, width: 150 },
   { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
   { text: 'Actions', value: 'actions', sortable: false, align: 'center' }

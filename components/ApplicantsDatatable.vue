@@ -178,6 +178,7 @@ const headers = [
     sortable: false,
     width: 150
   },
+  { text: 'Session Code', value: 'pikobar_session_id', width: 150 },
   { text: 'Nama Peserta', value: 'name', width: 250 },
   { text: 'Status Kesehatan', value: 'person_status', width: 150 },
   { text: 'Jenis Kelamin', value: 'gender', width: 150 },

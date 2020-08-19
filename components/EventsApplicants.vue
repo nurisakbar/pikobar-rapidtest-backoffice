@@ -106,6 +106,11 @@
           {{ value }}
         </v-chip>
       </template>
+      <template v-slot:[`item.applicant.birth_date`]="{ item }">
+        <v-layout justify-start>
+          {{ item.applicant.age }}
+        </v-layout>
+      </template>
       <template v-slot:[`item.applicant.gender`]="{ item }">
         <v-layout justify-start>
           <template v-if="item.applicant.gender === 'M'">
@@ -239,14 +244,14 @@ const headers = [
     sortable: false,
     width: 150
   },
-  { text: 'Nama Lengkap', value: 'applicant.name', width: 180 },
+  { text: 'Nama Lengkap', value: 'applicant.name', width: 250 },
   { text: 'Kloter', value: 'rdt_event_schedule_id', width: 85 },
   { text: 'Jenis Kelamin', value: 'applicant.gender', width: 140 },
-  { text: 'Usia', value: 'applicant.age', width: 85 },
+  { text: 'Usia', value: 'applicant.birth_date', width: 85 },
   { text: 'Checkin', value: 'attended_at', width: 250 },
   { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
   { text: 'Hasil Test', value: 'lab_result_type', width: 150 },
-  { text: 'Terkirim', value: 'notified_at', sortable: false, width: 150 },
+  { text: 'Undangan', value: 'notified_at', sortable: false, width: 150 },
   { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
   { text: 'Actions', value: 'actions', sortable: false, align: 'center' }
 ]

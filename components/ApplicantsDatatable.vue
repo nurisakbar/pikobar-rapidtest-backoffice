@@ -85,13 +85,13 @@
       </template>
       <template v-slot:[`item.symptoms_interaction`]="{ item }">
         <v-layout justify-center>
-          <template v-if="item.symptoms_interaction === 0">
+          <template v-if="item.symptoms_interaction === '0'">
             Ya
           </template>
-          <template v-if="item.symptoms_interaction === 1">
+          <template v-if="item.symptoms_interaction === '1'">
             Ya
           </template>
-          <template v-if="item.symptoms_interaction === 2">
+          <template v-if="item.symptoms_interaction === '2'">
             Tidak Tahu
           </template>
         </v-layout>

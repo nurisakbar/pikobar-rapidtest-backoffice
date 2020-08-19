@@ -110,6 +110,7 @@
 <script>
 /* eslint-disable camelcase */
 import { mapGetters } from 'vuex'
+import { format } from 'date-fns'
 
 export default {
   props: {
@@ -144,9 +145,13 @@ export default {
       let kloter = [null]
       if (val) {
         kloter = val.schedules.map((sch) => {
-          const [startH, startM] = sch.start_at.split('T')[1].split(':')
-          const [endH, endM] = sch.end_at.split('T')[1].split(':')
-          return `${startH}:${startM}-${endH}:${endM}`
+          const scheduleStart = new Date(sch.start_at)
+          const scheduleEnd = new Date(sch.end_at)
+
+          const inputScheduleStart = format(scheduleStart, 'HH:mm')
+          const inputScheduleEnd = format(scheduleEnd, 'HH:mm')
+
+          return `${inputScheduleStart}-${inputScheduleEnd}`
         })
       }
       this.event_name = val ? val.event_name : null
@@ -176,21 +181,18 @@ export default {
     doStore() {
       const schedules = this.kloter.map((waktu, i) => {
         let [start_atSch, end_atSch] = waktu.split('-')
-        const { setHours, setMinutes, format } = this.$dateFns
-        start_atSch = format(
-          setHours(
-            setMinutes(new Date(this.tanggal), start_atSch.split(':')[1]),
-            start_atSch.split(':')[0]
-          ),
-          "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        const { setHours, setMinutes } = this.$dateFns
+
+        start_atSch = setHours(
+          setMinutes(new Date(this.tanggal), start_atSch.split(':')[1]),
+          start_atSch.split(':')[0]
         )
-        end_atSch = format(
-          setHours(
-            setMinutes(new Date(this.tanggal), end_atSch.split(':')[1]),
-            end_atSch.split(':')[0]
-          ),
-          "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+
+        end_atSch = setHours(
+          setMinutes(new Date(this.tanggal), end_atSch.split(':')[1]),
+          end_atSch.split(':')[0]
         )
+
         const id = (this.formData && this.formData.schedules[i].id) || null
         return id
           ? {

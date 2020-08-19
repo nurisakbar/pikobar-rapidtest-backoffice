@@ -18,7 +18,7 @@
                 <p class="font-weight-medium mt-2 mb-0">
                   {{
                     $dateFns.format(
-                      new Date(getCurrent.start_at.split('.')[0]),
+                      new Date(getCurrent.start_at),
                       'dd-MM-yyyy HH:mm'
                     )
                   }}
@@ -31,7 +31,7 @@
                 <p class="font-weight-medium mt-2 mb-0">
                   {{
                     $dateFns.format(
-                      new Date(getCurrent.end_at.split('.')[0]),
+                      new Date(getCurrent.end_at),
                       'dd-MM-yyyy HH:mm'
                     )
                   }}
@@ -55,13 +55,9 @@
               >
                 <strong>ID {{ sch.id }}</strong
                 >:
-                {{
-                  $dateFns.format(new Date(sch.start_at.split('.')[0]), 'HH:mm')
-                }}
+                {{ $dateFns.format(new Date(sch.start_at), 'HH:mm') }}
                 -
-                {{
-                  $dateFns.format(new Date(sch.end_at.split('.')[0]), 'HH:mm')
-                }}
+                {{ $dateFns.format(new Date(sch.end_at), 'HH:mm') }}
                 WIB
               </li>
             </ol>
@@ -162,19 +158,9 @@
                   >
                     <template slot="label">
                       <strong class="mr-2">Kloter {{ i + 1 }}</strong>
-                      ({{
-                        $dateFns.format(
-                          new Date(sch.start_at.split('.')[0]),
-                          'HH:mm'
-                        )
-                      }}
+                      ({{ $dateFns.format(new Date(sch.start_at), 'HH:mm') }}
                       -
-                      {{
-                        $dateFns.format(
-                          new Date(sch.end_at.split('.')[0]),
-                          'HH:mm'
-                        )
-                      }})
+                      {{ $dateFns.format(new Date(sch.end_at), 'HH:mm') }})
                     </template>
                   </v-radio>
                 </v-radio-group>

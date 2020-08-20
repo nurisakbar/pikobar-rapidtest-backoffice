@@ -46,7 +46,14 @@
               </v-col>
               <v-col cols="4">
                 <label class="text-subtitle-2 grey--text">Kode Kegiatan</label>
-                <p class="font-weight-medium mt-2 mb-0">{{ event_code }}</p>
+                <p class="font-weight-medium mt-2 mb-0">
+                  {{ event_code }}
+                </p>
+                <p class="font-weight-medium mt-2 mb-0">
+                  <a :href="event_reg_url" target="_blank">
+                    (Link Pendaftaran)
+                  </a>
+                </p>
               </v-col>
             </v-row>
             <v-row>
@@ -134,6 +141,7 @@ export default {
       this.status = val ? val.status : null
       this.host_name = val ? val.host_name : null
       this.event_location = val ? val.event_location : null
+      this.event_reg_url = val ? val.event_reg_url : null
       this.city = val ? val.city : null
       this.start_at = val
         ? this.$dateFns.format(new Date(val.start_at), 'dd-MM-yyyy HH:mm')

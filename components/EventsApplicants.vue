@@ -248,6 +248,7 @@ const headers = [
   { text: 'Kloter', value: 'rdt_event_schedule_id', width: 85 },
   { text: 'Jenis Kelamin', value: 'applicant.gender', width: 140 },
   { text: 'Usia', value: 'applicant.birth_date', width: 85 },
+  { text: 'Lokasi Checkin', value: 'attend_location', width: 250 },
   { text: 'Checkin', value: 'attended_at', width: 250 },
   { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
   { text: 'Hasil Test', value: 'lab_result_type', width: 150 },

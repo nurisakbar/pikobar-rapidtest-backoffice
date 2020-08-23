@@ -11,6 +11,7 @@
     "export": "nuxt export",
     "serve": "nuxt serve",
     "generate": "nuxt generate",
+    "dist": "npm run generate && rimraf dist/**/*.js.map",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "js-cookie": "^2.2.1",
     "keycloak-js": "^11.0.0",
     "nuxt": "^2.14.1",
+    "rimraf": "^3.0.2",
     "vee-validate": "^3.3.9"
   },
   "devDependencies": {

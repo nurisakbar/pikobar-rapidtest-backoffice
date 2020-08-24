@@ -129,6 +129,8 @@ export default {
       city: null,
       invitations_count: null,
       attendees_count: null,
+      attendees_result_count: null,
+      event_reg_url: null,
       status: 'DRAFT',
       kloter: []
     }

@@ -146,7 +146,7 @@
             color="grey darken-1"
             outlined
             class="mr-2 px-2"
-            @click="blastNotify"
+            @click="blastNotify(null, `send${modalType.split(' ').join('')}`)"
           >
             Semua
           </v-btn>

@@ -35,10 +35,13 @@ export const actions = {
   async sendHasilTest({ commit }, { idEvent, target, invitations_ids }) {
     commit('SET_LOADING', true)
     try {
-      await this.$axios.$post(`rdt/events/${idEvent}/participants-notify`, {
-        target,
-        invitations_ids
-      })
+      await this.$axios.$post(
+        `rdt/events/${idEvent}/participants-notify-result`,
+        {
+          target,
+          invitations_ids
+        }
+      )
     } catch (e) {
       // console.log(e)
     } finally {

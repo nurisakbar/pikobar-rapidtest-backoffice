@@ -358,14 +358,14 @@ export default {
     openModalImportHasil() {
       this.ImportModalTest = true
     },
-    doImport() {
+    async doImport() {
       const formData = new FormData()
       formData.append('file', this.importFile)
       try {
-        // await this.$store.dispatch('eventParticipants/importPeserta', {
-        //   idEvent: this.getCurrent.id,
-        //   formData
-        // })
+        await this.$store.dispatch('eventParticipants/importTestResult', {
+          idEvent: this.idEvent,
+          formData
+        })
         this.$toast.show({
           message: SUCCESS_IMPORT,
           type: 'success'

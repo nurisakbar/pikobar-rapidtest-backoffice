@@ -187,6 +187,20 @@ export const actions = {
     }
   },
 
+  async importTestResult({ commit }, { idEvent, formData }) {
+    commit('SET_LOADING_IMPORT', true)
+    try {
+      await this.$axios.$post(
+        `/rdt/events/${idEvent}/participants-import-results`,
+        formData
+      )
+    } catch (e) {
+      throw new Error(e.response.data.message)
+    } finally {
+      commit('SET_LOADING_IMPORT', false)
+    }
+  },
+
   async setLabcode(
     { commit },
     { idEvent, rdt_invitation_id, lab_code_sample }

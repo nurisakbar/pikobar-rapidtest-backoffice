@@ -44,7 +44,10 @@
 <script>
 export default {
   layout: 'auth',
-  middleware: 'guest',
+
+  mounted() {
+    this.$keycloak.init()
+  },
 
   methods: {
     login() {

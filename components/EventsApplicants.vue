@@ -89,13 +89,26 @@
         </div>
       </template>
       <template v-slot:[`item.notified_at`]="{ value }">
-        {{ !!value ? 'Terkirim' : 'Belum Terkirim' }}
+        {{
+          !!value ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') : ''
+        }}
+      </template>
+      <template v-slot:[`item.notified_result_at`]="{ value }">
+        {{
+          !!value ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') : ''
+        }}
+      </template>
+      <template v-slot:[`item.created_at`]="{ value }">
+        {{ $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') }}
       </template>
       <template v-slot:[`item.attended_at`]="{ value }">
         {{
-          !!value
-            ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm')
-            : 'Tidak Hadir'
+          !!value ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') : ''
+        }}
+      </template>
+      <template v-slot:[`item.result_at`]="{ value }">
+        {{
+          !!value ? $dateFns.format(new Date(value), 'dd MMMM yyyy HH:mm') : ''
         }}
       </template>
       <template v-slot:[`item.lab_result_type`]="{ value }">
@@ -249,11 +262,17 @@ const headers = [
   { text: 'Jenis Kelamin', value: 'applicant.gender', width: 140 },
   { text: 'Usia', value: 'applicant.birth_date', width: 85 },
   { text: 'Lokasi Checkin', value: 'attend_location', width: 250 },
-  { text: 'Checkin', value: 'attended_at', width: 250 },
+  { text: 'Terdaftar', value: 'created_at', width: 200 },
+  { text: 'Checkin', value: 'attended_at', width: 200 },
   { text: 'Kode Sampel', value: 'lab_code_sample', width: 150 },
+  { text: 'Tanggal Hasil Test', value: 'result_at', width: 200 },
   { text: 'Hasil Test', value: 'lab_result_type', width: 150 },
-  { text: 'Undangan', value: 'notified_at', sortable: false, width: 150 },
-  { text: 'Status', value: 'applicant.status', sortable: false, width: 150 },
+  { text: 'Kirim Undangan', value: 'notified_at', width: 200 },
+  {
+    text: 'Kirim Hasil',
+    value: 'notified_result_at',
+    width: 200
+  },
   { text: 'Actions', value: 'actions', sortable: false, align: 'center' }
 ]
 

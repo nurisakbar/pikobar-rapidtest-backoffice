@@ -14,12 +14,20 @@
           Tambah Peserta
         </v-btn>
       </v-col>
-      <v-col v-if="allow.includes('manage-events')" cols="6">
-        <v-btn color="primary" @click="openModalNotif('Undangan')">
+      <v-col cols="6">
+        <v-btn
+          v-if="allow.includes('notify-participants')"
+          color="primary"
+          @click="openModalNotif('Undangan')"
+        >
           <v-icon class="mr-1">mdi-email-send</v-icon>
           Kirim Undangan
         </v-btn>
-        <v-btn color="success" @click="openModalNotif('Hasil Test')">
+        <v-btn
+          v-if="allow.includes('notify-participants')"
+          color="success"
+          @click="openModalNotif('Hasil Test')"
+        >
           <v-icon class="mr-1">mdi-file-send-outline</v-icon>
           Kirim Hasil Test
         </v-btn>

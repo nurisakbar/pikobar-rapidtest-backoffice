@@ -41,7 +41,6 @@ export default ({ app, store, redirect }) => {
         const userResourceAccess = app.$keycloak.resourceAccess
 
         if (
-          typeof userRealmAccess === 'undefined' ||
           typeof userResourceAccess === 'undefined' ||
           typeof userResourceAccess[process.env.keycloakClientId] ===
             'undefined'
@@ -51,7 +50,12 @@ export default ({ app, store, redirect }) => {
         }
 
         const userProfile = await app.$keycloak.loadUserProfile()
-        const userRole = userRealmAccess.roles[0]
+
+        let userRole = null
+
+        if (userRealmAccess) {
+          userRole = userRealmAccess.roles[0]
+        }
 
         const userPermissions =
           userResourceAccess[process.env.keycloakClientId].roles

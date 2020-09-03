@@ -239,6 +239,7 @@
       @close="modalEditLabCodeClose"
       @save="modalEditLabCodeSave"
     />
+    <dialog-export-loader :open="modalExportLoader" />
   </div>
 </template>
 
@@ -257,6 +258,7 @@ import {
   DEFAULT_FILTER
 } from '@/utilities/constant'
 import EventApplicantEditLabCodeDialog from '@/components/EventApplicantEditLabCodeDialog'
+import DialogExportLoader from '@/components/DialogLoader'
 
 const headers = [
   {
@@ -286,7 +288,8 @@ const headers = [
 
 export default {
   components: {
-    EventApplicantEditLabCodeDialog
+    EventApplicantEditLabCodeDialog,
+    DialogExportLoader
   },
   filters: {
     getChipColor
@@ -311,6 +314,7 @@ export default {
       ImportModalTest: false,
       modalType: 'Undangan',
       importFile: null,
+      modalExportLoader: false,
       modalEditLabCode: false,
       modalEditLabCodeId: null
     }
@@ -485,6 +489,8 @@ export default {
     },
 
     downloadExport(format) {
+      this.modalExportLoader = true
+
       this.$axios
         .get(
           `/rdt/events/${this.idEvent}/participants-export?format=${format}`,
@@ -517,6 +523,12 @@ export default {
           link.click()
           link.remove()
           window.URL.revokeObjectURL(url)
+
+          this.modalExportLoader = false
+        })
+        .catch(() => {
+          alert('Telah terjadi sebuah kesalahan. Silahkan coba ulangi kembali.')
+          this.modalExportLoader = false
         })
     }
   }

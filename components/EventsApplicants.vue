@@ -133,7 +133,7 @@
         </v-layout>
       </template>
       <template v-slot:[`item.applicant.gender`]="{ item }">
-        <v-layout justify-start>
+        <v-layout v-if="item.applicant.gender" justify-start>
           <template v-if="item.applicant.gender === 'M'">
             Laki-Laki
           </template>
